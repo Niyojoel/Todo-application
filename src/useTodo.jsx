@@ -157,12 +157,12 @@ const useTodo = () => {
         const changeRange=(e, id)=> {
             const todo_render = e.target.parentElement.parentElement.parentElement.children[0];
             console.log(todo_render)
+            let range; 
             const orderedList= todoList.map((todo)=> {
                 if (todo.id === id) {
                     todo.order = e.target.value
                     if(todo.order !== 0) {
-                        const range = Math.ceil(todo.order/10)
-    
+                        range = Math.ceil(todo.order/10)
                         todo_render.style.fontWeight = (range * 50) + 400; 
                     }else {
                         todo_render.style.fontWeight = '400'
