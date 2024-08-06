@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import './todo.css'
 import {FaEdit, FaTrash, FaSearch, FaClock,FaCog, FaAngleDown, FaAngleUp, FaTimes} from 'react-icons/fa';
 import useTodo from './useTodo';
@@ -6,7 +6,7 @@ import useTodo from './useTodo';
 
 function Todoapp() {
 
-    const {styleColors, baseThemeColor, todoList, sortTypes, activeSortType, sortBox, todoRender, inputRef, todoRenderRef, alert, date, time, editing, footerBtns, searchFound, sortUlRef, effectChange, settingsBtn, openSettings,alarmActiveBtnText, setOpenSettings, setSortBox, todoToolsControls, todoAlarmControls, sortTodoControls, themeHandler} = useTodo();
+    const {styleColors, baseThemeColor, todoList, sortTypes, activeSortType, sortBox, todoRender, inputRef, todoRenderRef, alert, date, time, editing, footerBtns, searchFound, sortUlRef, effectChange, settingsBtn, openSettings, setOpenSettings, setSortBox, todoToolsControls, todoAlarmControls, sortTodoControls, themeHandler} = useTodo();
 
     const {addTodo, toggleCheck, editTodo, deleteTodo, changeRange, emptyAll, activeTodos, deleteComp, initSearch} = todoToolsControls()
 
@@ -89,8 +89,7 @@ function Todoapp() {
                 <section className={`${todoRender.length > 0 ? 'todo_list todo_pad': 'todo_list'}`} style = {{borderRight: `2px inset ${styleColors.lightpurple}`, borderLeft: `2px inset ${styleColors.opacitypurple}`}} onMouseOver={hideSortBox} ref={todoRenderRef}>
                     {todoRender && todoRender.map((todo) => {
                         return <div key={todo.id}>
-                            <Todo key = {todo.id} todo ={todo} toggleCheck ={toggleCheck} deleteTodo ={deleteTodo} editTodo ={editTodo} changeRange={changeRange} toggleAlarmBox = {toggleAlarmBox}saveTodoAlarm = {saveTodoAlarm}changeAlarmTime ={changeAlarmTime}
-                            alarmActiveBtnText={alarmActiveBtnText}/>
+                            <Todo key = {todo.id} todo ={todo} toggleCheck ={toggleCheck} deleteTodo ={deleteTodo} editTodo ={editTodo} changeRange={changeRange} toggleAlarmBox = {toggleAlarmBox}saveTodoAlarm = {saveTodoAlarm}changeAlarmTime ={changeAlarmTime}/>
                         </div>
                     })}
                 </section>
@@ -108,7 +107,7 @@ function Todoapp() {
     )
 }
 
-const Todo = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTodoAlarm, toggleAlarmBox, changeAlarmTime, alarmActiveBtnText}) => {
+const Todo = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTodoAlarm, toggleAlarmBox, changeAlarmTime}) => {
     const {name, id, complete, order, alarm} = todo;
 
     const remTimeAway = (e)=> {
@@ -139,7 +138,7 @@ const Todo = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTodoAla
                     {!complete && <button className='tool_btn' onClick={()=>{editTodo(id)}}> <FaEdit className='edit'/></button>}
                     {!complete && <button className='tool_btn' id = {id} onClick={(e)=> toggleAlarmBox(e, 'open')}> <FaClock className= {`edit ${(alarm && alarm.active === true) && 'active_alarm'} `}/></button>}
                     {!complete && <button className='tool_btn imp_range'>
-                        <input  type='range' defaultValue={order} className= 'order_range' onChange={(e)=>changeRange(e, id)}/>
+                        <input  type='range' value={order} className= 'order_range' onChange={(e)=>changeRange(e, id)}/>
                     </button>}
                     <button className= 'tool_btn' onClick={()=>{deleteTodo(id)}}><FaTrash className='trash'/></button> 
                     <div className="alarm_box" id={id}>
