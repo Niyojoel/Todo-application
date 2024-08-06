@@ -333,25 +333,19 @@ const useTodo = () => {
         const saveTodoAlarm = (e, id)=> {
             e.preventDefault();
             alarmSetBtns
-            const formBtnText = e.target.childNodes[1].innerHTML;
-            console.log(formBtnText)
+            const formBtnText = e.target.childNodes[1].childNodes[0];
             const todoAlarmList = [...todoList];
 
             const todoActiveAlarmList = todoAlarmList.map((todo)=> {
-                if (formBtnText === 'set' && todo.id === id) {
-                    todo = {...todo, alarm: {...todo.alarm, active:true}};
+                if (todo.id === id) {
+                    todo.alarm = {...todo.alarm, active: !todo.alarm.active};
                     if(todo.alarm.time === time) {
                         console.log(`it's time for ${todo.tagName}`)
                     }
                     return todo;
-                    
-                }else if (formBtnText === 'cancel' && todo.id === id) {
-                    todo.alarm = {...todo.alarm, active: false};
-                    return todo;
-                }
+                   } 
                 return todo;
             })
-            console.log(todoActiveAlarmList)
             setTodoList(todoActiveAlarmList);
                 //Alarm reminder activation 
     
@@ -359,7 +353,6 @@ const useTodo = () => {
                 new Date().getHours();
                 new Date().getMinutes();
                 
-                formBtnText === 'set' ? formBtnText = 'cancel' : formBtnText ='set';
         }
 
         return {toggleAlarmBox, changeAlarmTime, saveTodoAlarm};
