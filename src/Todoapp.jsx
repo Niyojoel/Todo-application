@@ -47,7 +47,7 @@ function Todoapp() {
             </section> */}
             
             <section className='time_date'>
-                <div className='todays_date'> {date.replace(date.slice(-4), '')} </div>
+                <div className='todays_date'> {date} </div>
                 <div className='time'>{time.slice(0, 2)} {time.slice(2)}</div>
             </section>
 

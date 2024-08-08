@@ -19,7 +19,8 @@ const useTodo = () => {
     
     //UI elements
     const [todoRender, setTodoRender] = useState([]);
-    const [date, setDate] = useState(new Date().toLocaleDateString([], {dateStyle:'full'}))
+    const TodaysDate = new Date().toLocaleDateString([], {dateStyle:'full'})
+    const [date, setDate] = useState(TodaysDate.replace(TodaysDate.slice(-4), '').endsWith(',') ? TodaysDate.replace(TodaysDate.slice(-5), '') : TodaysDate.replace(TodaysDate.slice(-4), ''))
     const [time, setTime] = useState('');
     const [openSettings, setOpenSettings] = useState(false);
     const settingsBtn = useRef(null);
@@ -34,6 +35,7 @@ const useTodo = () => {
     const sortTypes = ['Time added', 'Todo imp.', 'Alarm time', 'Alp order'];
 
     //Alarm reminder
+    const [alarmWatchTime, setAlarmWatchTime] = useState('')
 
 
     function themeHandler () {
@@ -155,13 +157,14 @@ const useTodo = () => {
         }
     
         const changeRange=(e, id)=> {
-            const todo_render = e.target.parentElement.parentElement.parentElement.children[0];
+            const todo_render = e.target.parentElement.parentElement.parentElement.children[0].children[1];
             console.log(todo_render)
             let range; 
+            // debugger
             const orderedList= todoList.map((todo)=> {
                 if (todo.id === id) {
-                    todo.order = e.target.value
-                    if(todo.order !== 0) {
+                    todo.order = parseInt(e.target.value)
+                    if(todo.order > 0) {
                         range = Math.ceil(todo.order/10)
                         todo_render.style.fontWeight = (range * 50) + 400; 
                     }else {
@@ -182,14 +185,16 @@ const useTodo = () => {
             // }  
         }
 
-        const todoOrderStyles = ()=> {
+        const todoOrderStyles = (todos)=> {
             const todosEl= Array.from(todoRenderRef.current.children)
             
             const todoLabel = todosEl.map((el)=> {
             return el.children[0].children[0].children[0].children[1];
             })
 
-            todoList.map((todo)=> {
+            console.log(todoLabel)
+
+            todos.map((todo)=> {
                 todoLabel.find((lab)=> {
                     if (lab.innerText === todo.name && !todo.complete){
                         const fontweight = (todo.order * 50) + 400;   
@@ -327,23 +332,40 @@ const useTodo = () => {
         const saveTodoAlarm = (e, id)=> {
             e.preventDefault();
             const todoAlarmList = [...todoList];
+    
             const todoActiveAlarmList = todoAlarmList.map((todo)=> {
                 if (todo.id === id) {
                     todo.alarm = {...todo.alarm, active: !todo.alarm.active};
-                    if(todo.alarm.time === time) {
-                        console.log(`it's time for ${todo.tagName}`)
+                    if (todo.alarm.active === true) {
+                        alarmSetOff(todo.alarm.time);
                     }
-                    return todo;
-                   } 
+                return todo;
+                }
                 return todo;
             })
             setTodoList(todoActiveAlarmList);
+            
                 //Alarm reminder activation 
-    
                 const date = new Date().getTime(); 
                 new Date().getHours();
                 new Date().getMinutes();
         }
+
+        const alarmSetOff =(time) => {
+            const timeNow = new Date().getTime();
+            const alarmTimeHr = new Date ().setHours(parseInt(time.slice(0, 2)))
+            const alarmTimeMins = new Date ().setMinutes(parseInt(time.slice(0, 2)))
+            const alarmSetOffTime = new Date().setTime(time);
+            console.log(alarmTimeHr)
+            console.log(alarmSetOffTime);
+            console.log(timeNow);
+            const timeAwaytoAlarm = alarmSetOffTime - timeNow
+            console.log(timeAwaytoAlarm);
+            return setTimeout(()=> {
+
+            }, timeAwaytoAlarm)
+        }
+    
         return {toggleAlarmBox, changeAlarmTime, saveTodoAlarm};
     }
 
@@ -385,9 +407,12 @@ const useTodo = () => {
         setDate(date)
     }, [date]);
 
+    
     useEffect(()=> {
         const timeUpdate = setInterval(()=> {
             const currTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hourCycle:'h12'});
+            
+            setAlarmWatchTime (new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hourCycle:'h24'}));
             return setTime(currTime);
         }, 1000)
         return ()=> clearInterval(timeUpdate);
@@ -412,7 +437,7 @@ const useTodo = () => {
     }, [todoList, activeSortType, baseThemeColor])
     
     useEffect (()=> {
-        todoOrderStyles();
+        todoOrderStyles(todoRender);
         sortTypeEffect(activeSortType, todoRender);
     }, [todoRender])
 
