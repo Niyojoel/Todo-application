@@ -6,7 +6,7 @@ import useTodo from './useTodo';
 
 function Todoapp() {
 
-    const {styleColors, baseThemeColor, todoList, sortTypes, activeSortType, sortBox, todoRender, inputRef, todoRenderRef, alert, date, time, editing, footerBtns, searchFound, sortUlRef, effectChange, settingsBtn, openSettings, setOpenSettings, setSortBox, todoToolsControls, todoAlarmControls, sortTodoControls, themeHandler} = useTodo();
+    const {styleColors, baseThemeColor, todoList, sortTypes, activeSortType, sortBox, todoRender, inputRef, todoRenderRef, alert, date, time, alarmTime, editing, footerBtns, searchFound, sortUlRef, effectChange, settingsBtn, openSettings, setOpenSettings, setSortBox, todoToolsControls, todoAlarmControls, sortTodoControls, themeHandler} = useTodo();
 
     const {addTodo, toggleCheck, editTodo, deleteTodo, changeRange, emptyAll, activeTodos, deleteComp, initSearch} = todoToolsControls()
 
@@ -39,16 +39,9 @@ function Todoapp() {
                     <button type = 'button' className='settings_btn' ref = {settingsBtn} onClick = {()=> setOpenSettings(!openSettings)}><FaCog/></button>
                 </div>
             </section> 
-
-            {/* <section className='colorShades'>
-                {colors.map(col => {
-                    return <div className = 'color_arr' style = {{background: `rgb(${col.rgb.join(',')})`}} key = {col.index} ></div>
-                })}
-            </section> */}
-            
             <section className='time_date'>
                 <div className='todays_date'> {date} </div>
-                <div className='time'>{time.slice(0, 2)} {time.slice(2)}</div>
+                <div className='time'>{time}</div>
             </section>
 
             <div className='content_box' onMouseOver={()=> setOpenSettings(false)}>
@@ -89,7 +82,7 @@ function Todoapp() {
                 <section className={`${todoRender.length > 0 ? 'todo_list todo_pad': 'todo_list'}`} style = {{borderRight: `2px inset ${styleColors.lightpurple}`, borderLeft: `2px inset ${styleColors.opacitypurple}`}} onMouseOver={hideSortBox} ref={todoRenderRef}>
                     {todoRender && todoRender.map((todo) => {
                         return <div key={todo.id}>
-                            <Todo key = {todo.id} todo ={todo} toggleCheck ={toggleCheck} deleteTodo ={deleteTodo} editTodo ={editTodo} changeRange={changeRange} toggleAlarmBox = {toggleAlarmBox}saveTodoAlarm = {saveTodoAlarm}changeAlarmTime ={changeAlarmTime}/>
+                            <Todo key = {todo.id} todo ={todo} toggleCheck ={toggleCheck} deleteTodo ={deleteTodo} editTodo ={editTodo} changeRange={changeRange} toggleAlarmBox = {toggleAlarmBox}saveTodoAlarm = {saveTodoAlarm}changeAlarmTime ={changeAlarmTime} alarmTime={alarmTime}/>
                         </div>
                     })}
                 </section>
@@ -107,7 +100,7 @@ function Todoapp() {
     )
 }
 
-const Todo = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTodoAlarm, toggleAlarmBox, changeAlarmTime}) => {
+const Todo = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTodoAlarm, toggleAlarmBox, changeAlarmTime, alarmTime}) => {
     const {name, id, complete, order, alarm} = todo;
 
     const remTimeAway = (e)=> {
@@ -133,7 +126,7 @@ const Todo = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTodoAla
                     <input className ='todo_check' type='checkbox' id = {id} checked= {complete} onChange ={(e)=> {toggleCheck(e, id)}}/>
                     <label className= {`todo_item ${complete && 'dim'}`} onMouseEnter={remTimeAway} onMouseLeave={addTimeAway}>{name}</label>
                 </article> 
-                <div className='alarmtime_away'> {(alarm && alarm.active === true) && 'in 4 hours time'}</div>
+                <div className='alarmtime_away'> {(alarm && alarm.active === true) && `in ${alarm.time.slice(0, 2) - alarmTime.slice(0, 2)}`}</div>
                 <div className='todo_btns'>
                     {!complete && <button className='tool_btn' onClick={()=>{editTodo(id)}}> <FaEdit className='edit'/></button>}
                     {!complete && <button className='tool_btn' id = {id} onClick={(e)=> toggleAlarmBox(e, 'open')}> <FaClock className= {`edit ${(alarm && alarm.active === true) && 'active_alarm'} `}/></button>}
