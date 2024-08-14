@@ -119,6 +119,29 @@ const Todo = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTodoAla
         e.target.parentElement.classList.remove('wraptext')
     }
 
+    let alarmTimeAway;
+    useEffect(()=> {
+        if(alarm.active === true) {
+            // const timeArr = [
+            //     {hr: alarm.time.slice(0, 2), min: alarm.time.slice(0, -2)},
+            //     {hr: alarmTime.slice(0, 2), min: alarmTime.slice(0, -2)}
+            // ];
+            const remTime = parseInt(alarm.time);
+            const alrmTime = parseInt(alarmTime);
+            
+            setInterval (()=> {
+                if (remTime > alrmTime) {
+                    alarmTimeAway = `${remTime - alrmTime}`;
+                    console.log(alarmTimeAway);
+                    return alarmTimeAway;
+                }else {
+                    alarmTimeAway = `${(remTime + 24) - alrmTime}`;
+                }
+            }, )
+        }
+
+    }, [alarm.time, alarmTime])
+
     return (
         <section key={id} className='todo_wrapper'>
             <div className= 'todo_render' >
@@ -126,7 +149,7 @@ const Todo = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTodoAla
                     <input className ='todo_check' type='checkbox' id = {id} checked= {complete} onChange ={(e)=> {toggleCheck(e, id)}}/>
                     <label className= {`todo_item ${complete && 'dim'}`} onMouseEnter={remTimeAway} onMouseLeave={addTimeAway}>{name}</label>
                 </article> 
-                <div className='alarmtime_away'> {(alarm && alarm.active === true) && `in ${alarm.time.slice(0, 2) - alarmTime.slice(0, 2)}`}</div>
+                <div className='alarmtime_away'> {(alarm && alarm.active === true) && `in ${alarmTimeAway}`}</div>
                 <div className='todo_btns'>
                     {!complete && <button className='tool_btn' onClick={()=>{editTodo(id)}}> <FaEdit className='edit'/></button>}
                     {!complete && <button className='tool_btn' id = {id} onClick={(e)=> toggleAlarmBox(e, 'open')}> <FaClock className= {`edit ${(alarm && alarm.active === true) && 'active_alarm'} `}/></button>}

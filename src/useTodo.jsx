@@ -343,10 +343,8 @@ const useTodo = () => {
             setTodoList(todoActiveAlarmList);
         }
 
-        const alarmSetOff = ()=> {
-        setAlarmTime (new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hourCycle:'h24'}));
+        const alarmSetOff = (alarmTime)=> {
         const todoAlarmList = [...todoList];
-    
         const todoAlarmExecutedList = todoAlarmList.map((todo)=> {
             if (todo.alarm.active === true &&  todo.alarm.time === alarmTime) {
                 const alarmReminder = setTimeout(()=> {
@@ -360,6 +358,7 @@ const useTodo = () => {
             }
             return todo;
         })
+        // setTodoList(todoAlarmExecutedList);
     }
         return {toggleAlarmBox, changeAlarmTime, saveTodoAlarm, alarmSetOff};
     }
@@ -407,12 +406,15 @@ const useTodo = () => {
     
     useEffect(()=> {
         const timeUpdate = setInterval(()=> {
-            const currTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hourCycle:'h12'});
-            alarmSetOff();  
-            return setTime(currTime);
+            const currTime = (hc)=> {
+                return new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hourCycle: hc});
+            };
+            setAlarmTime (currTime('h24'));
+            alarmSetOff(alarmTime); 
+            setTime(currTime('h12'));
         }, 1000)
         return ()=> clearInterval(timeUpdate);
-    },[time])
+    },[])
     
     useEffect (()=> {
         const recalledTodo = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))
