@@ -573,6 +573,10 @@
     transition: all 300ms ease-out;
 }
 
+.shrink {
+    width: 38%;
+}
+
 .todo_check {
     width: 1rem;
     margin-top: 5.5px;
@@ -581,19 +585,12 @@
 }
 
 .todo_item {
+    width: 100%;
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: none;
     transition: all 300ms ease-out;
-}
-
-.todo_tagname:hover .alarmtime_away {
-    opacity: 0;
-}
-
-.shrink {
-    width: 30%;
 }
 
 .wraptext {
@@ -608,24 +605,14 @@
 
 .alarmtime_away {
     position: absolute;
-    left: 50%;
+    right: 50%;
     top: 0;
     bottom: 0;
-    width: 13%;
-    overflow: hidden;
-    text-wrap: nowrap;
-    text-overflow: ellipsis;
-    transform: translate(-50%);
+    transform: translate(50%);
     place-content: center;
     font-size: 0.89rem;
-    font-weight: 500;
-    color: green;
+    color: grey;
     opacity: 1;
-}
-
-.alarmtime_away:hover {
-    width: 20%;
-    text-overflow: clip;
 }
 
 .hidetime_away {
