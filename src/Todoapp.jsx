@@ -7,7 +7,7 @@ import useTodo from './useTodo';
 
 function Todoapp() {
 
-    const {styleColors, baseThemeColor, todoList, sortTypes, activeSortType, sortBox, todoRender, inputRef, todoRenderRef, alert, date, time, alarmTime, editing, footerBtns, searchFound, sortUlRef, effectChange, settingsBtn, openSettings, setOpenSettings, setSortBox, todoToolsControls, todoAlarmControls, sortTodoControls, themeHandler} = useTodo();
+    const {styleColors, baseThemeColor, todoList, sortTypes, activeSortType, sortBox, todoRender, inputRef, todoRenderRef, alert, date, time, editing, footerBtns, searchFound, sortUlRef, effectChange, settingsBtn, openSettings, setOpenSettings, setSortBox, todoToolsControls, todoAlarmControls, sortTodoControls, themeHandler} = useTodo();
 
     const {addTodo, toggleCheck, editTodo, deleteTodo, changeRange, emptyAll, activeTodos, deleteComp, initSearch} = todoToolsControls()
 
@@ -40,9 +40,16 @@ function Todoapp() {
                     <button type = 'button' className='settings_btn' ref = {settingsBtn} onClick = {()=> setOpenSettings(!openSettings)}><FaCog/></button>
                 </div>
             </section> 
+
+            {/* <section className='colorShades'>
+                {colors.map(col => {
+                    return <div className = 'color_arr' style = {{background: `rgb(${col.rgb.join(',')})`}} key = {col.index} ></div>
+                })}
+            </section> */}
+            
             <section className='time_date'>
                 <div className='todays_date'> {date} </div>
-                <div className='time'>{time}</div>
+                <div className='time'>{time.slice(0, 2)} {time.slice(2)}</div>
             </section>
 
             <div className='content_box' onMouseOver={()=> setOpenSettings(false)}>
@@ -83,7 +90,7 @@ function Todoapp() {
                 <section className={`${todoRender.length > 0 ? 'todo_list todo_pad': 'todo_list'}`} style = {{borderRight: `2px inset ${styleColors.lightpurple}`, borderLeft: `2px inset ${styleColors.opacitypurple}`}} onMouseOver={hideSortBox} ref={todoRenderRef}>
                     {todoRender && todoRender.map((todo) => {
                         return <div key={todo.id}>
-                            <Todo key = {todo.id} todo ={todo} toggleCheck ={toggleCheck} deleteTodo ={deleteTodo} editTodo ={editTodo} changeRange={changeRange} toggleAlarmBox = {toggleAlarmBox}saveTodoAlarm = {saveTodoAlarm}changeAlarmTime ={changeAlarmTime} alarmTime={alarmTime}/>
+                            <Todo key = {todo.id} todo ={todo} toggleCheck ={toggleCheck} deleteTodo ={deleteTodo} editTodo ={editTodo} changeRange={changeRange} toggleAlarmBox = {toggleAlarmBox}saveTodoAlarm = {saveTodoAlarm}changeAlarmTime ={changeAlarmTime}/>
                         </div>
                     })}
                 </section>

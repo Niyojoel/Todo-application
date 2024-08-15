@@ -19,8 +19,8 @@ const useTodo = () => {
     
     //UI elements
     const [todoRender, setTodoRender] = useState([]);
-    const TodaysDate = new Date().toLocaleDateString([], {weekday:'long', month:'long', day:'2-digit'})
-    const [date, setDate] = useState(TodaysDate)
+    const TodaysDate = new Date().toLocaleDateString([], {dateStyle:'full'})
+    const [date, setDate] = useState(TodaysDate.replace(TodaysDate.slice(-4), '').endsWith(',') ? TodaysDate.replace(TodaysDate.slice(-5), '') : TodaysDate.replace(TodaysDate.slice(-4), ''))
     const [time, setTime] = useState('');
     const [openSettings, setOpenSettings] = useState(false);
     const settingsBtn = useRef(null);
@@ -35,8 +35,7 @@ const useTodo = () => {
     const sortTypes = ['Time added', 'Todo imp.', 'Alarm time', 'Alp order'];
 
     //Alarm reminder
-    const [alarmTime, setAlarmTime] = useState('');
-    const [remHrsAway, setRemHrsAway]= useState();
+    const [alarmWatchTime, setAlarmWatchTime] = useState('')
 
 
     function themeHandler () {
@@ -337,10 +336,34 @@ const useTodo = () => {
             const todoActiveAlarmList = todoAlarmList.map((todo)=> {
                 if (todo.id === id) {
                     todo.alarm = {...todo.alarm, active: !todo.alarm.active};
+                    return todo;
                 }
                 return todo;
             })
             setTodoList(todoActiveAlarmList);
+            
+                //Alarm reminder activation 
+                const date = new Date().getTime(); 
+                new Date().getHours();
+                new Date().getMinutes();
+        }
+
+        const alarmSetOff =(time) => {
+            const timeNow = new Date().getTime();
+            const alarmTimeHr = new Date ().setHours(parseInt(time.slice(0, 2)))
+            const alarmTimeMins = new Date ().setMinutes(parseInt(time.slice(0, 2)))
+            const alarmSetOffTime = new Date().setTime(time);
+            console.log(alarmTimeHr)
+            console.log(alarmSetOffTime);
+            console.log(timeNow);
+            const timeAwaytoAlarm = alarmSetOffTime - timeNow
+            console.log(timeAwaytoAlarm);
+            return setTimeout(()=> {
+
+            }, timeAwaytoAlarm)
+        }
+    
+        return {toggleAlarmBox, changeAlarmTime, saveTodoAlarm};
         }
 
         const alarmSetOff = (alarmTime)=> {
@@ -363,8 +386,6 @@ const useTodo = () => {
     const {addTodo, alertControl, todoOrderStyles} = todoToolsControls()
 
     const {sortTypeEffect} = sortTodoControls()
-    
-    const {alarmSetOff} = todoAlarmControls();
 
     useEffect(()=> {
         const rgbColor = (num)=> {
@@ -403,15 +424,12 @@ const useTodo = () => {
     
     useEffect(()=> {
         const timeUpdate = setInterval(()=> {
-            const currTime = (hc)=> {
-                return new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hourCycle: hc});
-            };
-            setAlarmTime (currTime('h24'));
-            alarmSetOff(alarmTime); 
-            setTime(currTime('h12'));
+            const currTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hourCycle:'h12'});
+            alarmSetOff();  
+            return setTime(currTime);
         }, 1000)
         return ()=> clearInterval(timeUpdate);
-    },[])
+    },[time])
     
     useEffect (()=> {
         const recalledTodo = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))
@@ -444,7 +462,7 @@ const useTodo = () => {
         return ()=> clearInterval(alertTimer);
     },[todoList, addTodo])
 
-    return {colors, date, time, alarmTime, setColors, baseThemeColor, setBaseThemeColor, styleColors, colorVar, todoList, sortTypes, activeSortType, sortBox, setSortBox, effectChange, setEffectChange,openSettings, setOpenSettings, settingsBtn, todoRender, inputRef, todoRenderRef, alert, editing, footerBtns, searchFound, todoToolsControls, sortTodoControls, todoAlarmControls, themeHandler}
+    return {colors, date, time, setColors, baseThemeColor, setBaseThemeColor, styleColors, colorVar, todoList, sortTypes, activeSortType, sortBox, setSortBox, effectChange, setEffectChange,openSettings, setOpenSettings, settingsBtn, todoRender, inputRef, todoRenderRef, alert, editing, footerBtns, searchFound, todoToolsControls, sortTodoControls, todoAlarmControls, themeHandler}
 }
 
 export default useTodo;
