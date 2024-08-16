@@ -1,6 +1,7 @@
 import React,{useEffect} from 'react';
 import './todo.css'
-import {FaEdit, FaTrash, FaSearch, FaClock,FaCog, FaAngleDown, FaAngleUp, FaTimes} from 'react-icons/fa';
+import Todo from './todoEntry';
+import {FaSearch, FaCog, FaAngleDown, FaAngleUp, FaTimes} from 'react-icons/fa';
 import useTodo from './useTodo';
 
 
@@ -105,78 +106,5 @@ function Todoapp() {
             </div>
         </main>
     )
-}
-
-const Todo = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTodoAlarm, toggleAlarmBox, changeAlarmTime, alarmTime}) => {
-    const {name, id, complete, order, alarm} = todo;
-
-    const remTimeAway = (e)=> {
-        const alarmtime_away = e.target.parentElement.nextSibling;
-        alarmtime_away.classList.add('hidetime_away');
-        e.target.parentElement.classList.remove('shrink')
-        e.target.parentElement.classList.add('wraptext')
-    }
-
-    const addTimeAway = (e)=> {
-        const alarmtime_away = e.target.parentElement.nextSibling;
-        setTimeout(()=> {
-            alarmtime_away.classList.remove('hidetime_away');
-        }, 3000)
-        e.target.parentElement.classList.add('shrink')
-        e.target.parentElement.classList.remove('wraptext')
-    }
-
-    let alarmTimeAway;
-    useEffect(()=> {
-        if(alarm.active === true) {
-            // const timeArr = [
-            //     {hr: alarm.time.slice(0, 2), min: alarm.time.slice(0, -2)},
-            //     {hr: alarmTime.slice(0, 2), min: alarmTime.slice(0, -2)}
-            // ];
-            const remTime = parseInt(alarm.time);
-            const alrmTime = parseInt(alarmTime);
-            
-            setInterval (()=> {
-                if (remTime > alrmTime) {
-                    alarmTimeAway = `${remTime - alrmTime}`;
-                    console.log(alarmTimeAway);
-                    return alarmTimeAway;
-                }else {
-                    alarmTimeAway = `${(remTime + 24) - alrmTime}`;
-                }
-            }, )
-        }
-
-    }, [alarm.time, alarmTime])
-
-    return (
-        <section key={id} className='todo_wrapper'>
-            <div className= 'todo_render' >
-                <article onMouseOver={(e)=>  toggleAlarmBox (e, 'close')} className= {`todo_tagname ${(alarm && alarm.active === true) && 'shrink'}`}>
-                    <input className ='todo_check' type='checkbox' id = {id} checked= {complete} onChange ={(e)=> {toggleCheck(e, id)}}/>
-                    <label className= {`todo_item ${complete && 'dim'}`} onMouseEnter={remTimeAway} onMouseLeave={addTimeAway}>{name}</label>
-                </article> 
-                <div className='alarmtime_away'> {(alarm && alarm.active === true) && `in ${alarmTimeAway}`}</div>
-                <div className='todo_btns'>
-                    {!complete && <button className='tool_btn' onClick={()=>{editTodo(id)}}> <FaEdit className='edit'/></button>}
-                    {!complete && <button className='tool_btn' id = {id} onClick={(e)=> toggleAlarmBox(e, 'open')}> <FaClock className= {`edit ${(alarm && alarm.active === true) && 'active_alarm'} `}/></button>}
-                    {!complete && <button className='tool_btn imp_range'>
-                        <input  type='range' value={order} className= 'order_range' onChange={(e)=>changeRange(e, id)}/>
-                    </button>}
-                    <button className= 'tool_btn' onClick={()=>{deleteTodo(id)}}><FaTrash className='trash'/></button> 
-                    <div className="alarm_box" id={id}>
-                        <button className="close_btn" id = {id} onClick={(e)=> toggleAlarmBox(e, 'close')}><FaTimes/></button>
-                        <form className='alarm_form' onSubmit={(e)=> saveTodoAlarm(e, id)}>
-                            {(alarm && alarm.active === true) ? <label className='alarmactive_time'>{alarm && alarm.time}</label> :
-                            <input type='time' id = {id} value ={(alarm && alarm.time)} onChange={changeAlarmTime}/>}
-                            <button type ='submit' className={`alarm_set ${(alarm && alarm.active === true) && 'cancel_style'}`} id= {id}>{alarm && alarm.active === true ? 'cancel' : 'set'} </button>
-                        </form>
-                    </div>
-                </div>  
-            </div>
-            <hr className='line' onMouseOver={(e)=>  toggleAlarmBox (e, 'close')}></hr>
-        </section>
-            
-    );
 }
 export default Todoapp;

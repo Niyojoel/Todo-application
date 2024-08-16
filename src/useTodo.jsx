@@ -368,16 +368,13 @@ const useTodo = () => {
 
         const alarmSetOff = (alarmTime)=> {
         const todoAlarmList = [...todoList];
+        let remMssg
         const todoAlarmExecutedList = todoAlarmList.map((todo)=> {
             if (todo.alarm.active === true &&  todo.alarm.time === alarmTime) {
-                const alarmReminder = setTimeout(()=> {
-                    const remMssg = `It's time for ${todo.name}`
-                    console.log(remMssg); 
-                    return remMssg;
-
-               }, 2000)
-
-               todo.alarm = {...todo.alarm, active: !todo.alarm.active}
+                remMssg = `It's time for ${todo.name}`
+                console.log(remMssg); 
+                todo.alarm = {...todo.alarm, active: !todo.alarm.active};
+                return remMssg;
             }
             return todo;
         })
