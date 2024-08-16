@@ -35,7 +35,7 @@ const useTodo = () => {
     const sortTypes = ['Time added', 'Todo imp.', 'Alarm time', 'Alp order'];
 
     //Alarm reminder
-    const [alarmWatchTime, setAlarmWatchTime] = useState('')
+    const [alarmTime, setAlarmTime] = useState('')
 
 
     function themeHandler () {
@@ -341,45 +341,22 @@ const useTodo = () => {
                 return todo;
             })
             setTodoList(todoActiveAlarmList);
-            
-                //Alarm reminder activation 
-                const date = new Date().getTime(); 
-                new Date().getHours();
-                new Date().getMinutes();
         }
 
-        const alarmSetOff =(time) => {
-            const timeNow = new Date().getTime();
-            const alarmTimeHr = new Date ().setHours(parseInt(time.slice(0, 2)))
-            const alarmTimeMins = new Date ().setMinutes(parseInt(time.slice(0, 2)))
-            const alarmSetOffTime = new Date().setTime(time);
-            console.log(alarmTimeHr)
-            console.log(alarmSetOffTime);
-            console.log(timeNow);
-            const timeAwaytoAlarm = alarmSetOffTime - timeNow
-            console.log(timeAwaytoAlarm);
-            return setTimeout(()=> {
-
-            }, timeAwaytoAlarm)
-        }
-    
-        return {toggleAlarmBox, changeAlarmTime, saveTodoAlarm};
-        }
-
-        const alarmSetOff = (alarmTime)=> {
-        const todoAlarmList = [...todoList];
-        let remMssg
-        const todoAlarmExecutedList = todoAlarmList.map((todo)=> {
-            if (todo.alarm.active === true &&  todo.alarm.time === alarmTime) {
-                remMssg = `It's time for ${todo.name}`
-                console.log(remMssg); 
-                todo.alarm = {...todo.alarm, active: !todo.alarm.active};
-                return remMssg;
-            }
-            return todo;
-        })
+        const alarmSetOff = (alarmtime)=> {
+            const todoAlarmList = [...todoList];
+            let remMssg
+            const todoAlarmExecutedList = todoAlarmList.map((todo)=> {
+                if (todo.alarm.active === true &&  todo.alarm.time === alarmtime) {
+                    remMssg = `It's time for ${todo.name}`
+                    console.log(remMssg); 
+                    todo.alarm = {...todo.alarm, active: !todo.alarm.active};
+                    return remMssg;
+                }
+                return todo;
+            })
         // setTodoList(todoAlarmExecutedList);
-    }
+        }
         return {toggleAlarmBox, changeAlarmTime, saveTodoAlarm, alarmSetOff};
     }
 
@@ -423,10 +400,13 @@ const useTodo = () => {
 
     
     useEffect(()=> {
+        const currTime =(hc) => {
+            return new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hourCycle: hc});
+        } 
         const timeUpdate = setInterval(()=> {
-            const currTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hourCycle:'h12'});
-            alarmSetOff();  
-            return setTime(currTime);
+            // alarmSetOff(alarmTime);
+            setAlarmTime(currTime('h24'));
+            setTime(currTime('h12'));
         }, 1000)
         return ()=> clearInterval(timeUpdate);
     },[time])
