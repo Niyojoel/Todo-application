@@ -349,13 +349,13 @@ const useTodo = () => {
             const todoAlarmExecutedList = todoAlarmList.map((todo)=> {
                 if (todo.alarm.active === true &&  todo.alarm.time === alarmtime) {
                     remMssg = `It's time for ${todo.name}`
-                    console.log(remMssg); 
                     todo.alarm = {...todo.alarm, active: !todo.alarm.active};
-                    return remMssg;
+                    console.log(remMssg); 
+                    return todo;
                 }
                 return todo;
             })
-        // setTodoList(todoAlarmExecutedList);
+            setTodoList(todoAlarmExecutedList);
         }
         return {toggleAlarmBox, changeAlarmTime, saveTodoAlarm, alarmSetOff};
     }
@@ -363,6 +363,8 @@ const useTodo = () => {
     const {addTodo, alertControl, todoOrderStyles} = todoToolsControls()
 
     const {sortTypeEffect} = sortTodoControls()
+
+    const {alarmSetOff} = todoAlarmControls();
 
     useEffect(()=> {
         const rgbColor = (num)=> {
@@ -404,7 +406,7 @@ const useTodo = () => {
             return new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hourCycle: hc});
         } 
         const timeUpdate = setInterval(()=> {
-            // alarmSetOff(alarmTime);
+            alarmSetOff(alarmTime);
             setAlarmTime(currTime('h24'));
             setTime(currTime('h12'));
         }, 1000)

@@ -31,10 +31,10 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
         if(activeAlarm === true) {
             let remTime;
             //checking for mins on both times less than 10
-            const minsFormatter = (mins)=> {
-                if (mins ==='01' || mins ==='02'|| mins ==='03'|| mins ==='04'|| mins ==='05'|| mins ==='06'|| mins ==='07'|| mins ==='08'|| mins ==='09') {
+            const minsFormatter = (purp, mins)=> {
+                if (purp === "log" &&  (mins ==='01' || mins ==='02'|| mins ==='03'|| mins ==='04'|| mins ==='05'|| mins ==='06'|| mins ==='07'|| mins ==='08'|| mins ==='09')) {
                     return mins = 10;
-                }
+                }               
                 return mins;
             }
             
@@ -47,9 +47,9 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
                 return remTime = parseFloat(`${hrs1}.${mins1}`);
             }
             
-            const alrmTime = parseFloat(`${alarmTime.slice(0,2)}.${minsFormatter(alarmTime.slice(-2))}`);
+            const alrmTime = parseFloat(`${alarmTime.slice(0,2)}.${minsFormatter("log", alarmTime.slice(-2))}`);
             
-            let formattedTime = timeAwayFormatter(parseInt(minsFormatter(alarm.time.slice(-2))), parseInt(alarm.time.slice(0,2)), parseInt(minsFormatter(alarmTime.slice(-2))));
+            let formattedTime = timeAwayFormatter(parseInt( minsFormatter("log", alarm.time.slice(-2))), parseInt(alarm.time.slice(0,2)), parseInt(minsFormatter("log", alarmTime.slice(-2))));
             let timeapart;
             if (formattedTime > alrmTime) {
                 timeapart = (formattedTime - alrmTime).toFixed(2);
@@ -58,10 +58,33 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
                 //for time apart from alarm time set for the following day
                 timeapart = ((formattedTime += 24) - alrmTime).toFixed(2);
             }
-            setAlarmTimeAway(`${timeapart !== undefined ? timeapart : '...'}`);
+
+            setAlarmTimeAway(()=> {
+                let timeAway = `${timeapart}`.replace('.', 'h ').concat('m');
+ 
+                if(timeapart !== undefined) {
+                    if(timeAway.slice(0, 1) === '0') {
+                        return timeAway.replace(timeAway.slice(0, 2), '');
+                    }
+                    if(timeAway.slice(-3) === '0') {
+                        return timeAway.replace(timeAway.slice(-3), '');
+                    }
+
+                    if(timeAway.slice(-1, -4) === '00m') {
+                        return timeAway.replace(timeAway.slice(-1, -4), '');
+                    }
+
+                    if(timeAway.slice(0, 1) === '0' && timeAway.slice(-1, -4) === '00m') {
+                        return timeAway = '';
+                    }
+                    return timeAway;
+                } 
+                return '...';
+            });   
         }
         
     }, [alarm.time, alarmTime, saveTodoAlarm])
+
 
   return (
         <section key={id} className='todo_wrapper'>
@@ -70,7 +93,7 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
                     <input className ='todo_check' type='checkbox' id = {id} checked= {complete} onChange ={(e)=> {toggleCheck(e, id)}}/>
                     <label className= {`todo_item ${complete && 'dim'} `} onMouseOver={remTimeAway} onMouseLeave={addTimeAway}>{name}</label>
                 </article> 
-                <div className='alarmtime_away'> {activeAlarm && `in ${alarmTimeAway.replace('.', 'h ' ).concat('m')}`}</div>
+                <div className='alarmtime_away'> {activeAlarm && `in ${alarmTimeAway}`}</div>
                 <div className='todo_btns'>
                     {!complete && <button className='tool_btn' onClick={()=>{editTodo(id)}}> <FaEdit className='edit'/></button>}
                     {!complete && <button className='tool_btn' id = {id} onClick={(e)=> toggleAlarmBox(e, 'open')}> <FaClock className= {`edit ${(activeAlarm) && 'active_alarm'} `}/></button>}
