@@ -28,7 +28,7 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
     }
 
     useEffect(()=> {
-      /*  if(activeAlarm === true) {
+        if(activeAlarm === true) {
             let remTime;
             //checking for mins on both times less than 10
             const minsFormatter = (mins)=> {
@@ -47,7 +47,7 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
                 return remTime = parseFloat(`${hrs1}.${mins1}`);
             }
             
-            // const alrmTime = parseFloat(`${alarmTime.slice(0,2)}.${minsFormatter(alarmTime.slice(-2))}`);
+            const alrmTime = parseFloat(`${alarmTime.slice(0,2)}.${minsFormatter(alarmTime.slice(-2))}`);
             
             let formattedTime = timeAwayFormatter(parseInt(minsFormatter(alarm.time.slice(-2))), parseInt(alarm.time.slice(0,2)), parseInt(minsFormatter(alarmTime.slice(-2))));
             let timeapart;
@@ -59,8 +59,7 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
                 timeapart = ((formattedTime += 24) - alrmTime).toFixed(2);
             }
             setAlarmTimeAway(`${timeapart !== undefined ? timeapart : '...'}`);
-        } */
-        console.log (alarmTime)
+        }
         
     }, [alarm.time, alarmTime, saveTodoAlarm])
 
