@@ -35,8 +35,8 @@ const useTodo = () => {
     const sortTypes = ['Time added', 'Todo imp.', 'Alarm time', 'Alp order'];
 
     //Alarm reminder
-    const [alarmTime, setAlarmTime] = useState('')
-
+    const [alarmTime, setAlarmTime] = useState('');
+    
 
     function themeHandler () {
         const changeThemeColor = ()=> {
@@ -158,7 +158,6 @@ const useTodo = () => {
     
         const changeRange=(e, id)=> {
             const todo_render = e.target.parentElement.parentElement.parentElement.children[0].children[1];
-            console.log(todo_render)
             let range; 
             // debugger
             const orderedList= todoList.map((todo)=> {
@@ -174,15 +173,7 @@ const useTodo = () => {
                 }
                 return todo;
             })
-            setTodoList(orderedList);
-            
-            // sortTypeEffect(activeSortType, todoRender)
-            // if(activeSortType === 'Todo imp.') {
-            //     const reorderedTodo = [...todoRender].sort((a,b)=> b.range - a.range)
-            //     return setTimeout(()=> {
-            //         setTodoRender(reorderedTodo);
-            //     }, 1000)
-            // }  
+            setTodoList(orderedList); 
         }
 
         const todoOrderStyles = (todos)=> {
@@ -192,12 +183,10 @@ const useTodo = () => {
             return el.children[0].children[0].children[0].children[1];
             })
 
-            console.log(todoLabel)
-
             todos.map((todo)=> {
                 todoLabel.find((lab)=> {
                     if (lab.innerText === todo.name && !todo.complete){
-                        const fontweight = (todo.order * 50) + 400;   
+                        const fontweight = ((todo.order)/10 * 50) + 400;   
                         lab.style.fontWeight = `${fontweight}`; 
                     }
                 })
@@ -272,7 +261,7 @@ const useTodo = () => {
         const sortTypeEffect = (type, todos = [...todoRender])=> {
             let reorderedTodos;
             if(type === 'Todo imp.') {
-                reorderedTodos= [...todos.sort((a, b)=> b.range - a.range).sort((a,b)=> a.complete - b.complete)]
+                reorderedTodos= [...todos.sort((a, b)=> b.order - a.order).sort((a,b)=> a.complete - b.complete)]
             }else if(type === 'Alp order') {
                 reorderedTodos= [...todos.sort((a,b)=> a.name.localeCompare(b.name)).sort((a,b)=> a.complete - b.complete)]
             }else if (type === 'Time added') {
@@ -280,7 +269,6 @@ const useTodo = () => {
             }else if (type === 'Alarm time') {
                 reorderedTodos= [...todos.sort((a,b)=> a.alarm.active - b.alarm.active).sort((a,b)=> a.alarm.time.localeCompare(b.alarm.time)).sort((a,b)=> a.complete - b.complete)]
             }
-            console.log(reorderedTodos)
             return reorderedTodos
         }
 
@@ -344,18 +332,23 @@ const useTodo = () => {
         }
 
         const alarmSetOff = (alarmtime)=> {
+        if(todoList) {
             const todoAlarmList = [...todoList];
             let remMssg
             const todoAlarmExecutedList = todoAlarmList.map((todo)=> {
                 if (todo.alarm.active === true &&  todo.alarm.time === alarmtime) {
                     remMssg = `It's time for ${todo.name}`
                     todo.alarm = {...todo.alarm, active: !todo.alarm.active};
-                    console.log(remMssg); 
+                    const alarmNot = new Audio('./piano.mp3');
+                    // alarmNot.play();
+                    alarmNot.loop = 'false';
                     return todo;
                 }
                 return todo;
             })
-            setTodoList(todoAlarmExecutedList);
+            // setTodoList(todoAlarmExecutedList);
+        }
+        // 
         }
         return {toggleAlarmBox, changeAlarmTime, saveTodoAlarm, alarmSetOff};
     }
@@ -417,7 +410,6 @@ const useTodo = () => {
         const recalledTodo = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))
         if (recalledTodo)  {
             setTodoList(recalledTodo.todoList);
-            console.log(recalledTodo.activeSortType)
             setActiveSortType(recalledTodo.activeSortType ? recalledTodo.activeSortType : 'Time added');  
             sortTypeEffect(recalledTodo.activeSortType, recalledTodo.todoList);         
             setBaseThemeColor(recalledTodo.baseThemeColor)

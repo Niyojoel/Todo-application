@@ -611,16 +611,42 @@
     left: 50%;
     top: 0;
     bottom: 0;
-    width: 13%;
+    width: 8%;
+    display: flex;
+    align-items: center;
     overflow: hidden;
     text-wrap: nowrap;
     text-overflow: ellipsis;
     transform: translate(-50%);
-    place-content: center;
+    opacity: 1;
+    transition: var(--main-transition);
+}
+
+ .notificatn_text{
     font-size: 0.89rem;
+    width: 20%;
+    overflow: hidden;
     font-weight: 500;
     color: green;
-    opacity: 1;
+    display: inline; 
+}
+
+.notificatn_text.timeout {
+    color: red;
+}
+
+.rmAlarmNotificatn {
+    position: relative;
+    top: -10px;
+    right: -5px;
+    padding: 0;
+    align-self: start;
+    background: transparent;
+    font-size: 0.7rem;
+    color: #bebebe;
+    border: transparent;
+    outline: transparent;
+
 }
 
 .alarmtime_away:hover {

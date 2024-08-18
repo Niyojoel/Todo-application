@@ -39,7 +39,7 @@ function Todoapp() {
                     <h3>Todo Application</h3>
                     <button type = 'button' className='settings_btn' ref = {settingsBtn} onClick = {()=> setOpenSettings(!openSettings)}><FaCog/></button>
                 </div>
-            </section>           
+            </section>
             <section className='time_date'>
                 <div className='todays_date'> {date} </div>
                 <div className='time'>{time.slice(0, 2)} {time.slice(2)}</div>
@@ -83,7 +83,7 @@ function Todoapp() {
                 <section className={`${todoRender.length > 0 ? 'todo_list todo_pad': 'todo_list'}`} style = {{borderRight: `2px inset ${styleColors.lightpurple}`, borderLeft: `2px inset ${styleColors.opacitypurple}`}} onMouseOver={hideSortBox} ref={todoRenderRef}>
                     {todoRender && todoRender.map((todo) => {
                         return <div key={todo.id}>
-                            <Todo key = {todo.id} todo ={todo} toggleCheck ={toggleCheck} deleteTodo ={deleteTodo} editTodo ={editTodo} changeRange={changeRange} toggleAlarmBox = {toggleAlarmBox}saveTodoAlarm = {saveTodoAlarm}changeAlarmTime ={changeAlarmTime} alarmTime= {alarmTime}/>
+                            <Todo key = {todo.id} todo ={todo} toggleCheck ={toggleCheck} deleteTodo ={deleteTodo} editTodo ={editTodo} changeRange={changeRange} toggleAlarmBox = {toggleAlarmBox} saveTodoAlarm = {saveTodoAlarm} changeAlarmTime ={changeAlarmTime} alarmTime= {alarmTime}/>
                         </div>
                     })}
                 </section>
