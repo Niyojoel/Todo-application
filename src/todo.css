@@ -608,26 +608,26 @@
 
 .alarmtime_away {
     position: absolute;
-    left: 50%;
+    left: 44%;
     top: 0;
     bottom: 0;
-    width: 8%;
-    display: flex;
-    align-items: center;
+    width: 14%;
+    display: block;
+    place-content: center;
     overflow: hidden;
     text-wrap: nowrap;
     text-overflow: ellipsis;
-    transform: translate(-50%);
+    color: rgb(190, 190, 190);
     opacity: 1;
     transition: var(--main-transition);
 }
 
+
  .notificatn_text{
-    font-size: 0.89rem;
-    width: 20%;
-    overflow: hidden;
-    font-weight: 500;
-    color: green;
+    font-size: 0.83rem;
+    flex: 1;
+    font-weight: 400;
+    color: rgb(190, 190, 190);
     display: inline; 
 }
 
@@ -638,20 +638,34 @@
 .rmAlarmNotificatn {
     position: relative;
     top: -10px;
-    right: -5px;
+    right: 0;
     padding: 0;
+    padding-left: 5px;
     align-self: start;
     background: transparent;
     font-size: 0.7rem;
-    color: #bebebe;
+    color: rgb(203, 203, 203);
+    border: transparent;
+    outline: transparent;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.rmAlarmNotificatn:focus, .rmAlarmNotificatn:hover {
+    color: #b2b2b2;
+    transform: scale(1.1);
     border: transparent;
     outline: transparent;
 
 }
 
 .alarmtime_away:hover {
-    width: 20%;
-    text-overflow: clip;
+    width: fit-content;
+}
+
+.alarmtime_away:hover .rmAlarmNotificatn{
+    visibility: visible;
+    pointer-events: all;
 }
 
 .hidetime_away {

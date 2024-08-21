@@ -4,6 +4,7 @@ import {FaEdit, FaTrash, FaClock, FaTimes} from 'react-icons/fa';
 
 const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTodoAlarm, toggleAlarmBox, changeAlarmTime, alarmTime}) => {
     const [alarmTimeAway, setAlarmTimeAway] = useState('');
+    const [alarmNotif, setAlarmNotif] = useState(false);
 
     const {name, id, complete, order, alarm} = todo;
 
@@ -32,24 +33,25 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
             if(activeAlarm === true) {
                 //checking for mins on both times less than 10
                 const minsFormatter = (mins)=> {
+                    let newMins;
                     if (mins ==='01' || mins ==='02'|| mins ==='03'|| mins ==='04'|| mins ==='05'|| mins ==='06'|| mins ==='07'|| mins ==='08'|| mins ==='09') {
-                        return mins = 10;
+                        newMins = 10;
                     }               
-                    return mins;
+                    return newMins;
                 }
                 
                 //if the minutes on alarm time is less than that on clock time
                 const timeAwayFormatter = (mins1, hrs1, mins2)=> {
                     if(mins1 < mins2) {
                         hrs1--;
-                        mins1+= 60;
+                        mins1+=60;
                     }
                     return parseFloat(`${hrs1}.${mins1}`);
                 }
                 
                 const alrmTime = parseFloat(`${alarmTime.slice(0,2)}.${minsFormatter( alarmTime.slice(-2))}`);
                 
-                let formattedTime = timeAwayFormatter(parseInt( minsFormatter(alarm.time.slice(-2))), parseInt(alarm.time.slice(0,2)), parseInt(minsFormatter( alarmTime.slice(-2))));
+                let formattedTime = timeAwayFormatter(parseInt(minsFormatter(alarm.time.slice(-2))), parseInt(alarm.time.slice(0,2)), parseInt(minsFormatter(alarmTime.slice(-2))));
                 let timeapart;
                 if (formattedTime > alrmTime) {
                     timeapart = (formattedTime - alrmTime).toFixed(2);
@@ -64,18 +66,22 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
                   
                     if(timeapart !== undefined) {
                         let hr = timeAway.slice(0, 2);
-                        if(hr === '0h') {
+                        let mn = timeAway.slice(-3);
+                        if(hr === '0h' && mn.slice(0, 1) === '0') {
+                            return timeAway.replace(timeAway.slice(0, 4), '');
+                        }
+                        if (hr === '0h' && mn === '00m') {
+                            setAlarmNotif(true);
+                        }
+                        if(hr === '0h' && mn.slice(0, 1) !== '0') {
                             return timeAway.replace(timeAway.slice(0, 2), '');
                         }
-                        
-                        let mn = timeAway.slice(-3);
-                        if(mn === '00m') {
+                        if(hr !== '0h' && mn.slice(0, 1) === '0') {
+                            return timeAway.replace(mn.slice(0, 1), '');
+                        }
+                        if(hr !== '0h' && mn === '00m') {
                             return timeAway.length > 3 && timeAway.replace(timeAway.slice(-3), '');
-                        }
-                        else if (mn.slice(0, 1) === '0') {
-                            return timeAway.replace(timeAway.slice(-3).slice(0, 1), '');
-        
-                        }
+                        }  
                         return timeAway;
                     } 
                     return '...';
@@ -111,6 +117,8 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
         alarmAway.style.pointerEvents = 'none';
     }
 
+    const alarmNotRmv = activeAlarm || alarmNotif === true;
+
   return (
         <section key={id} className='todo_wrapper'>
             <div className= 'todo_render' >
@@ -119,13 +127,15 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
                     <label className= {`todo_item ${complete && 'dim'} `} onMouseOver={remTimeAway} onMouseLeave={addTimeAway}>{name}</label>
                 </article> 
                 <div className='alarmtime_away'> 
-                    {(activeAlarm || alarmTimeAway === '00m') && 
-                    <span>
-                        <p className = {`notificatn_text ${alarmTimeAway === '00m' && 'timeout'}`}> in {activeAlarm ? alarmTimeAway : 'Alarm Timed Out'}</p>
+                    <span className='notif_content'>
+                        <p className = {`notificatn_text ${alarmNotif === true && 'timeout'}`}> 
+                        {activeAlarm  && `${alarmTimeAway} time`}
+                        {alarmNotif === true && 'Alarm Timed out'}
+                        </p>
                         <button type ='button' onClick={rmNotificatn}className='rmAlarmNotificatn'>
-                            <FaTimes/>
+                            {alarmNotRmv && <FaTimes/>}
                         </button> 
-                    </span>}
+                    </span>
                 </div>
                 <div className='todo_btns'>
                     {!complete && <button className='tool_btn' onClick={()=>{editTodo(id)}}> <FaEdit className='edit'/></button>}
