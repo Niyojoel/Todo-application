@@ -1,7 +1,6 @@
 import {useRef, useState, useEffect} from 'react';
 import Values from 'values.js';
 
-
 const useTodo = () => {
     const isMounted = useRef(false);
 
@@ -331,33 +330,40 @@ const useTodo = () => {
             setTodoList(todoActiveAlarmList);
         }
 
-        const alarmSetOff = (alarmtime)=> {
-        if(todoList) {
+        const checkAlarm = (alarmtime)=> {
             const todoAlarmList = [...todoList];
-            let remMssg
+            let timeForTodo = 'false';
             const todoAlarmExecutedList = todoAlarmList.map((todo)=> {
                 if (todo.alarm.active === true &&  todo.alarm.time === alarmtime) {
-                    remMssg = `It's time for ${todo.name}`
+                    timeForTodo = 'true'
                     todo.alarm = {...todo.alarm, active: !todo.alarm.active};
-                    const alarmNot = new Audio('./piano.mp3');
-                    // alarmNot.play();
-                    alarmNot.loop = 'false';
+                    // const alarmNot = new Audio('./piano.mp3');
+                    // // alarmNot.play();
+                    // alarmNot.loop = 'false';
                     return todo;
                 }
                 return todo;
             })
-            // setTodoList(todoAlarmExecutedList);
+            return {todoAlarmExecutedList, timeForTodo};
         }
-        // 
+
+        const alarmSetOff = ()=> {
+            const {todoAlarmExecutedList, timeForTodo} = checkAlarm();
+            if(timeForTodo === 'true') {
+                // const alarmNot = new Audio('./piano.mp3');
+                    // // alarmNot.play();
+                    // alarmNot.loop = 'false';
+                setTodoList(todoAlarmExecutedList);
+            }
         }
-        return {toggleAlarmBox, changeAlarmTime, saveTodoAlarm, alarmSetOff};
+        return {toggleAlarmBox, changeAlarmTime, saveTodoAlarm, checkAlarm, alarmSetOff};
     }
 
     const {addTodo, alertControl, todoOrderStyles} = todoToolsControls()
 
     const {sortTypeEffect} = sortTodoControls()
 
-    const {alarmSetOff} = todoAlarmControls();
+    const {checkAlarm} = todoAlarmControls()
 
     useEffect(()=> {
         const rgbColor = (num)=> {
@@ -399,8 +405,8 @@ const useTodo = () => {
             return new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hourCycle: hc});
         } 
         const timeUpdate = setInterval(()=> {
-            alarmSetOff(alarmTime);
             setAlarmTime(currTime('h24'));
+            checkAlarm(alarmTime);
             setTime(currTime('h12'));
         }, 1000)
         return ()=> clearInterval(timeUpdate);

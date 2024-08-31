@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {FaEdit, FaTrash, FaClock, FaTimes} from 'react-icons/fa';
+import { Temporal } from 'temporal-polyfill';
 
 
 const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTodoAlarm, toggleAlarmBox, changeAlarmTime, alarmTime}) => {
@@ -10,14 +11,14 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
 
     const activeAlarm = alarm && alarm.active === true;
 
-
+    //Removing alarmTimeAway on hover on todo tagname 
     const remTimeAway = (e)=> {
         const alarmtime_away = e.target.parentElement.nextSibling;
         alarmtime_away.classList.add('hidetime_away');
         e.currentTarget.parentElement.classList.remove('shrink');
         // e.currentTarget.parentElement.classList.add('wraptext')
     }
-
+    //adding alarmTimeAway back
     const addTimeAway = (e)=> {
         const alarmtime_away = e.target.parentElement.nextSibling;
         const timeout = setTimeout(()=> {
@@ -27,64 +28,23 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
         e.currentTarget.parentElement.classList.remove('wraptext');
         e.currentTarget.parentElement.classList.add('shrink');
     }
-
+    
+    //setting alarmTimeAway
     useEffect(()=> {
         const timeAwayInt = setInterval (()=> {
             if(activeAlarm === true) {
-                //checking for mins on both times less than 10
-                const minsFormatter = (mins)=> {
-                    let newMins;
-                    if (mins ==='01' || mins ==='02'|| mins ==='03'|| mins ==='04'|| mins ==='05'|| mins ==='06'|| mins ==='07'|| mins ==='08'|| mins ==='09') {
-                        newMins = 10;
-                    }               
-                    return newMins;
-                }
+                const currTime = Temporal.Now.plainTimeISO();
                 
-                //if the minutes on alarm time is less than that on clock time
-                const timeAwayFormatter = (mins1, hrs1, mins2)=> {
-                    if(mins1 < mins2) {
-                        hrs1--;
-                        mins1+=60;
-                    }
-                    return parseFloat(`${hrs1}.${mins1}`);
-                }
-                
-                const alrmTime = parseFloat(`${alarmTime.slice(0,2)}.${minsFormatter( alarmTime.slice(-2))}`);
-                
-                let formattedTime = timeAwayFormatter(parseInt(minsFormatter(alarm.time.slice(-2))), parseInt(alarm.time.slice(0,2)), parseInt(minsFormatter(alarmTime.slice(-2))));
-                let timeapart;
-                if (formattedTime > alrmTime) {
-                    timeapart = (formattedTime - alrmTime).toFixed(2);
-                }
-                else if (formattedTime < alrmTime) {
-                    //for alarm time set for the following day
-                    timeapart = ((formattedTime += 24) - alrmTime).toFixed(2);
+                const alarmTimeTemp = Temporal.PlainTime.from({hour: alarm.time.slice(0, 2), minute: alarm.time.slice(-2)}).toString(); 
+            
+                const timeAway = currTime.until(alarmTimeTemp).round('second').toString().replace('PT', '').replace('H', 'H ').toLowerCase().concat(' time');
+                 
+                if(timeAway === '0s time') {
+                    setAlarmNotif(true);
                 }
     
                 setAlarmTimeAway(()=> {
-                    let timeAway = `${timeapart}`.replace('.', 'h ').concat('m');
-                  
-                    if(timeapart !== undefined) {
-                        let hr = timeAway.slice(0, 2);
-                        let mn = timeAway.slice(-3);
-                        if(hr === '0h' && mn.slice(0, 1) === '0') {
-                            return timeAway.replace(timeAway.slice(0, 4), '');
-                        }
-                        if (hr === '0h' && mn === '00m') {
-                            setAlarmNotif(true);
-                        }
-                        if(hr === '0h' && mn.slice(0, 1) !== '0') {
-                            return timeAway.replace(timeAway.slice(0, 2), '');
-                        }
-                        if(hr !== '0h' && mn.slice(0, 1) === '0') {
-                            return timeAway.replace(mn.slice(0, 1), '');
-                        }
-                        if(hr !== '0h' && mn === '00m') {
-                            return timeAway.length > 3 && timeAway.replace(timeAway.slice(-3), '');
-                        }  
-                        return timeAway;
-                    } 
-                    return '...';
+                    return activeAlarm ? currTime.until(alarmTimeTemp).round('second').toString().replace('PT', '').replace('H', 'H ').toLowerCase().concat(' time') : '';
                 });   
             }
             return clearInterval(timeAwayInt);
@@ -115,6 +75,14 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
         const alarmAway = e.currentTarget.parentElement;
         alarmAway.style.opacity = '0';
         alarmAway.style.pointerEvents = 'none';
+        const alarmStyle = alarmAway.parentElement.style;
+        if(!activeAlarm) {
+            alarmStyle.style.opacity = '0';
+        }else {
+            alarmStyle.color = 'green';
+            alarmStyle.fontSize = '1.2rem';
+            alarmStyle.paddingBottom = '0.7rem';
+        }
     }
 
     const alarmNotRmv = activeAlarm || alarmNotif === true;
@@ -129,10 +97,10 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
                 <div className='alarmtime_away'> 
                     <span className='notif_content'>
                         <p className = {`notificatn_text ${alarmNotif === true && 'timeout'}`}> 
-                        {activeAlarm  && `${alarmTimeAway} time`}
+                        {activeAlarm  && `${alarmTimeAway}`}
                         {alarmNotif === true && 'Alarm Timed out'}
                         </p>
-                        <button type ='button' onClick={rmNotificatn}className='rmAlarmNotificatn'>
+                        <button type ='button' onClick={rmNotificatn}className='rmAlarmNotificatnBtn'>
                             {alarmNotRmv && <FaTimes/>}
                         </button> 
                     </span>
@@ -156,7 +124,6 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
             </div>
             <hr className='line' onMouseOver={(e)=>  toggleAlarmBox (e, 'close')}></hr>
         </section>
-            
     );
 }
 

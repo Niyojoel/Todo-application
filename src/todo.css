@@ -608,7 +608,7 @@
 
 .alarmtime_away {
     position: absolute;
-    left: 44%;
+    left: 40%;
     top: 0;
     bottom: 0;
     width: 14%;
@@ -635,7 +635,7 @@
     color: red;
 }
 
-.rmAlarmNotificatn {
+.rmAlarmNotificatnBtn {
     position: relative;
     top: -10px;
     right: 0;
@@ -651,7 +651,7 @@
     pointer-events: none;
 }
 
-.rmAlarmNotificatn:focus, .rmAlarmNotificatn:hover {
+.rmAlarmNotificatnBtn:focus, .rmAlarmNotificatnBtn:hover {
     color: #b2b2b2;
     transform: scale(1.1);
     border: transparent;
@@ -663,7 +663,7 @@
     width: fit-content;
 }
 
-.alarmtime_away:hover .rmAlarmNotificatn{
+.alarmtime_away:hover .rmAlarmNotificatnBtn{
     visibility: visible;
     pointer-events: all;
 }
