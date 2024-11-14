@@ -19,7 +19,7 @@ const useTodo = () => {
     //UI elements
     const [todoRender, setTodoRender] = useState([]);
     const TodaysDate = new Date().toLocaleDateString([], {dateStyle:'full'})
-    const [date, setDate] = useState(TodaysDate.replace(TodaysDate.slice(-4), '').endsWith(',') ? TodaysDate.replace(TodaysDate.slice(-5), '') : TodaysDate.replace(TodaysDate.slice(-4), ''))
+    const [date, setDate] = useState(TodaysDate.replace(TodaysDate.slice(-4), '').endsWith(',') ? TodaysDate.replace(TodaysDate.slice(-7), '') : TodaysDate.replace(TodaysDate.slice(-6), ''))
     const [time, setTime] = useState('');
     const [openSettings, setOpenSettings] = useState(false);
     const settingsBtn = useRef(null);
@@ -35,6 +35,7 @@ const useTodo = () => {
 
     //Alarm reminder
     const [alarmTime, setAlarmTime] = useState('');
+    const [playTune, setPlayTune] = useState(false);
     
 
     function themeHandler () {
@@ -330,33 +331,52 @@ const useTodo = () => {
             setTodoList(todoActiveAlarmList);
         }
 
+        //helper function
+        const timeForTodo = (moment, latestTodo)=> {
+            setTodoList(latestTodo);
+            let alarmTune = new Audio('./piano.mp3');
+            alarmTune.loop = false;
+            
+        
+            if(moment === 'true') {
+                alarmTune.play();
+                console.log(alarmTune)
+                return;
+            }else
+            console.log("stop playing");
+            alarmTune.pause();
+            alarmTune.currentTime = 0;
+        }
+
         const checkAlarm = (alarmtime)=> {
             const todoAlarmList = [...todoList];
-            let timeForTodo = 'false';
+            let timeNow = 'false';
             const todoAlarmExecutedList = todoAlarmList.map((todo)=> {
                 if (todo.alarm.active === true &&  todo.alarm.time === alarmtime) {
-                    timeForTodo = 'true'
-                    todo.alarm = {...todo.alarm, active: !todo.alarm.active};
-                    // const alarmNot = new Audio('./piano.mp3');
-                    // // alarmNot.play();
-                    // alarmNot.loop = 'false';
+                    todo.alarm = {...todo.alarm, active: !todo.alarm.active, expired: true};
+                    timeNow = 'true'
+                    return todo;
+                }
+                return todo;
+            });
+            
+            timeNow === 'true' && timeForTodo(timeNow, todoAlarmExecutedList);
+        }
+        
+        const addressExpiredAlarm = (id)=> {
+            const todoList_ = [...todoList];
+            const addressedList = todoList_.map((todo)=> {
+                if (todo.id === id) {
+                    todo.alarm = {time: '12:00', active: 'false'};
                     return todo;
                 }
                 return todo;
             })
-            return {todoAlarmExecutedList, timeForTodo};
+            timeForTodo ("false", addressedList);
+            // setTodoList(addressedList);
         }
 
-        const alarmSetOff = ()=> {
-            const {todoAlarmExecutedList, timeForTodo} = checkAlarm();
-            if(timeForTodo === 'true') {
-                // const alarmNot = new Audio('./piano.mp3');
-                    // // alarmNot.play();
-                    // alarmNot.loop = 'false';
-                setTodoList(todoAlarmExecutedList);
-            }
-        }
-        return {toggleAlarmBox, changeAlarmTime, saveTodoAlarm, checkAlarm, alarmSetOff};
+        return {toggleAlarmBox, changeAlarmTime, saveTodoAlarm, checkAlarm, addressExpiredAlarm};
     }
 
     const {addTodo, alertControl, todoOrderStyles} = todoToolsControls()
@@ -365,6 +385,10 @@ const useTodo = () => {
 
     const {checkAlarm} = todoAlarmControls()
 
+
+    //---------------BELONG IN THE TODOAPP ----------------------------
+
+    //Theme change
     useEffect(()=> {
         const rgbColor = (num)=> {
             return colors[num].rgb.join(',');
@@ -383,6 +407,7 @@ const useTodo = () => {
         setStyleColors(choiceColors)
     }, [colors])
 
+    // Setting Icon toggle
     useEffect(()=> {
         if(openSettings) {
             settingsBtn.current.classList.add('settings_active');
@@ -395,11 +420,15 @@ const useTodo = () => {
 
     const LOCAL_STORAGE_KEY ='Todos';
 
+    //------------------------------------------------------------------
+
+
+    // Date tracking
     useEffect(()=> {
         setDate(date)
     }, [date]);
 
-    
+    //Time and alarm tracking
     useEffect(()=> {
         const currTime =(hc) => {
             return new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', hourCycle: hc});
@@ -412,6 +441,7 @@ const useTodo = () => {
         return ()=> clearInterval(timeUpdate);
     },[time])
     
+    // Getting local storage on initial load
     useEffect (()=> {
         const recalledTodo = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))
         if (recalledTodo)  {
@@ -423,17 +453,20 @@ const useTodo = () => {
         };
     }, [])
     
+    //Saving to local storage
     useEffect (()=> {
         const todosInfo = {todoList: todoList, activeSortType: activeSortType, baseThemeColor: baseThemeColor}
         isMounted.current ? localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todosInfo)): isMounted.current = true;
         setTodoRender(todosInfo.todoList);        
     }, [todoList, activeSortType, baseThemeColor])
     
+    //Style and order effect
     useEffect (()=> {
         todoOrderStyles(todoRender);
         sortTypeEffect(activeSortType, todoRender);
     }, [todoRender])
 
+    //Alert 
     useEffect(()=> {
         const alertTimer = setTimeout(()=> {
             alertControl();

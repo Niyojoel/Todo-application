@@ -15,12 +15,12 @@ function Todoapp() {
     
     const {persistSortBox, hideSortBox, chooseSortType} = sortTodoControls();
     
-    const {changeAlarmTime, saveTodoAlarm, toggleAlarmBox} = todoAlarmControls()
+    const {changeAlarmTime, saveTodoAlarm, toggleAlarmBox, addressExpiredAlarm} = todoAlarmControls()
 
     const searchEntrance = todoList.length > 4;
 
     return (
-        <main className ='container' style={{background: styleColors.contbcg, borderRight: `1px inset ${styleColors.lightpurple}`, borderLeft: `1px inset ${styleColors.inputborderpurple}`}}>
+        <main className ='container' style={{background: "rgba(248, 248, 248)" || styleColors.contbcg, borderRight: `1px inset ${styleColors.lightpurple}`, borderLeft: `1px inset ${styleColors.inputborderpurple}`}}>
                 {openSettings && <section className='settings_bcg'>
                     <div className='settings_box' style = {{borderBottom: `1px solid ${styleColors.inputborderpurple}`}}>
                         <div className='theme'>
@@ -63,11 +63,11 @@ function Todoapp() {
                     
                     <button className= {`input_box ${searchEntrance && 'input_active'}`}onMouseOver={(e)=> toggleAlarmBox (e, 'close')}>
                         <input type='text' placeholder= {`Search todo`} onChange={initSearch} onClick={initSearch} onMouseOver= {inputHoverStyle} onMouseDown = {inputFocusStyle} onMouseOut= {mouseOut} className= {`search_input`}/>
-                        <span className='search_icon' style = {{color: styleColors.opacitypurple}}><FaSearch/></span>
+                    <span className='search_icon' style = {{color: styleColors.opacitypurple}}><FaSearch/></span>
                     </button>
                 </div>
 
-                {todoList.length > 2 && <div className='sortings' onMouseOver={(e)=> toggleAlarmBox (e, 'close')}> 
+                {todoList.length > 3 && <div className={ footerBtns ? "sortings" : "sortings sortings--noshow"} onMouseOver={(e)=> toggleAlarmBox (e, 'close')}> 
                     <span onMouseOver={hideSortBox}> sort by : </span>
                     <button onClick ={()=>setSortBox(!sortBox)} type = 'button' className='sort_type' style={{color: styleColors.opacitypurple}} onMouseOver= {inputHoverStyle} onMouseOut= {mouseOut} onMouseDown= {inputFocusStyle}>{activeSortType}{sortBox ? <FaAngleDown/> : <FaAngleUp/>}</button>
                     
@@ -83,7 +83,7 @@ function Todoapp() {
                 <section className={`${todoRender.length > 0 ? 'todo_list todo_pad': 'todo_list'}`} style = {{borderRight: `2px inset ${styleColors.lightpurple}`, borderLeft: `2px inset ${styleColors.opacitypurple}`}} onMouseOver={hideSortBox} ref={todoRenderRef}>
                     {todoRender && todoRender.map((todo) => {
                         return <div key={todo.id}>
-                            <Todo key = {todo.id} todo ={todo} toggleCheck ={toggleCheck} deleteTodo ={deleteTodo} editTodo ={editTodo} changeRange={changeRange} toggleAlarmBox = {toggleAlarmBox} saveTodoAlarm = {saveTodoAlarm} changeAlarmTime ={changeAlarmTime} alarmTime= {alarmTime}/>
+                            <Todo key = {todo.id} todo ={todo} toggleCheck ={toggleCheck} deleteTodo ={deleteTodo} editTodo ={editTodo} changeRange={changeRange} toggleAlarmBox = {toggleAlarmBox} saveTodoAlarm = {saveTodoAlarm} changeAlarmTime ={changeAlarmTime} alarmTime= {alarmTime} addressExpiredAlarm= {addressExpiredAlarm}/>
                         </div>
                     })}
                 </section>

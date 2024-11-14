@@ -3,7 +3,7 @@ import {FaEdit, FaTrash, FaClock, FaTimes} from 'react-icons/fa';
 import { Temporal } from 'temporal-polyfill';
 
 
-const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTodoAlarm, toggleAlarmBox, changeAlarmTime, alarmTime}) => {
+const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTodoAlarm, toggleAlarmBox, changeAlarmTime, alarmTime, addressExpiredAlarm}) => {
     const [alarmTimeAway, setAlarmTimeAway] = useState('');
     const [alarmNotif, setAlarmNotif] = useState(false);
 
@@ -18,6 +18,7 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
         e.currentTarget.parentElement.classList.remove('shrink');
         // e.currentTarget.parentElement.classList.add('wraptext')
     }
+
     //adding alarmTimeAway back
     const addTimeAway = (e)=> {
         const alarmtime_away = e.target.parentElement.nextSibling;
@@ -33,45 +34,46 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
     useEffect(()=> {
         const timeAwayInt = setInterval (()=> {
             if(activeAlarm === true) {
-                const currTime = Temporal.Now.plainTimeISO();
-                
-                const alarmTimeTemp = Temporal.PlainTime.from({hour: alarm.time.slice(0, 2), minute: alarm.time.slice(-2)}).toString(); 
-            
-                const timeAway = currTime.until(alarmTimeTemp).round('second').toString().replace('PT', '').replace('H', 'H ').toLowerCase().concat(' time');
-                 
-                if(timeAway === '0s time') {
-                    setAlarmNotif(true);
+                const currTime = Temporal.PlainTime.from({hour: alarmTime.slice(0,2), minute: alarmTime.slice(3,5)});
+
+                const alarmTimeTemp = Temporal.PlainTime.from({hour: alarm.time.slice(0, 2), minute: alarm.time.slice(-2)}); 
+
+                let timeAway 
+                if(alarm.time > alarmTime) {
+                    timeAway = currTime.until(alarmTimeTemp);
+                }else {
+                    timeAway = currTime.until(alarmTimeTemp).add({days: 1});
                 }
-    
+
+                const timeAwayString = timeAway.round('second').toString().replace('PT', '').replace('H', 'H ').toLowerCase();
+
+                console.log(timeAwayString)
+
+                // if(timeAwayString === 'p1d') {
+                    
+                // }
+
                 setAlarmTimeAway(()=> {
-                    return activeAlarm ? currTime.until(alarmTimeTemp).round('second').toString().replace('PT', '').replace('H', 'H ').toLowerCase().concat(' time') : '';
+                    return alarm.time !== alarmTime ? `in ${timeAwayString}` : "";
                 });   
             }
             return clearInterval(timeAwayInt);
         }, 1000)
-    }, [saveTodoAlarm])
+    }, [saveTodoAlarm, activeAlarm])
 
-   /* useEffect (()=> {
-        if(todo) {
-            const todoAlarmList = [...todoList];
-            let remMssg
-            const todoAlarmExecutedList = todoAlarmList.map((todo)=> {
-                if (todo.alarm.active === true &&  todo.alarm.time === alarmTime) {
-                    remMssg = `It's time for ${todo.name}`
-                    // todo.alarm = {...todo.alarm, active: !todo.alarm.active};
-                    const alarmNot = new Audio('./piano.mp3');
-                    // alarmNot.play();
-                    alarmNot.loop = 'false';
-                    console.log(remMssg); 
-                    return todo;
-                }
-                return todo;
-            })
-            // setTodoList(todoAlarmExecutedList);
+    useEffect(()=> {
+        alarm.expired ? setAlarmNotif(true) : setAlarmNotif(false);
+    }, [alarm, addressExpiredAlarm])
+
+    useEffect(()=> {
+        activeAlarm && setAlarmNotif(false);
+    }, [saveTodoAlarm, activeAlarm])
+
+    //Notification toggling
+    const rmNotificatn = (e, id)=> {
+        if(alarmNotif) {
+            return addressExpiredAlarm(id);
         }
-    }, [alarmTime])*/
-
-    const rmNotificatn = (e)=> {
         const alarmAway = e.currentTarget.parentElement;
         alarmAway.style.opacity = '0';
         alarmAway.style.pointerEvents = 'none';
@@ -96,11 +98,11 @@ const todoEntry = ({todo, toggleCheck, deleteTodo, editTodo, changeRange, saveTo
                 </article> 
                 <div className='alarmtime_away'> 
                     <span className='notif_content'>
-                        <p className = {`notificatn_text ${alarmNotif === true && 'timeout'}`}> 
-                        {activeAlarm  && `${alarmTimeAway}`}
-                        {alarmNotif === true && 'Alarm Timed out'}
+                        <p className = {`notificatn_text ${alarmNotif && 'timeout'}`}> 
+                        {activeAlarm && alarmTimeAway}
+                        {alarmNotif && 'alarm timed out'}
                         </p>
-                        <button type ='button' onClick={rmNotificatn}className='rmAlarmNotificatnBtn'>
+                        <button type ='button' onClick={(e)=>rmNotificatn(e, id)} className='rmAlarmNotificatnBtn'>
                             {alarmNotRmv && <FaTimes/>}
                         </button> 
                     </span>
