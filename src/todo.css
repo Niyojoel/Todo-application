@@ -38,6 +38,7 @@
     width: 80vw;
     position: relative;
     max-height: 90vh;
+    height: 90vh;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
@@ -568,6 +569,7 @@
     width: 75%;
     text-wrap: nowrap;
     overflow: hidden;
+    color: black;
     text-align: left;
     transition: all 300ms ease-out;
 }
