@@ -19,7 +19,7 @@ const useTodo = () => {
     //UI elements
     const [todoRender, setTodoRender] = useState([]);
     const TodaysDate = new Date().toLocaleDateString([], {dateStyle:'full'})
-    const [date, setDate] = useState(TodaysDate.replace(TodaysDate.slice(-4), '').endsWith(',') ? TodaysDate.replace(TodaysDate.slice(-7), '') : TodaysDate.replace(TodaysDate.slice(-6), ''))
+    const [date, setDate] = useState(TodaysDate.replace(TodaysDate.slice(-4)).endsWith(',') ? TodaysDate.replace(TodaysDate.slice(-6)) : TodaysDate.replace(TodaysDate.slice(-5), ''))
     const [time, setTime] = useState('');
     const [openSettings, setOpenSettings] = useState(false);
     const settingsBtn = useRef(null);
@@ -40,9 +40,9 @@ const useTodo = () => {
 
     function themeHandler () {
         const changeThemeColor = ()=> {
-        setColors(new Values(baseThemeColor).all(colorVar))
-        setEffectChange(false)
-        setOpenSettings(false)
+            setColors(new Values(baseThemeColor).all(colorVar))
+            setEffectChange(false)
+            setOpenSettings(false)
         }
 
         const handleColorChange = (e) => {
@@ -54,9 +54,9 @@ const useTodo = () => {
             if(e.target.className.includes('sort_type')) {
                 e.target.style.color = styleColors.sorttypehov;
             }else if (e.target.className.includes('dltcomp_btn') || e.target.className.includes('empty_btn')) {
-                e.target.style.background = styleColors.opacitypurple
+                e.target.style.background = styleColors.opacitycolor
             }else {
-                e.target.style.border = `1px solid ${styleColors.inputborderpurple}` 
+                e.target.style.border = `1px solid ${styleColors.inputbordercolor}` 
             }
         }
 
@@ -65,9 +65,9 @@ const useTodo = () => {
                 e.target.style.color = styleColors.sorttypehov;
             }else if(e.target.className.includes('add_input')){
                 e.target.style.border = `1px solid white`
-                e.target.style.background = styleColors.faintpurple;
+                e.target.style.background = styleColors.faintcolor;
             }else if(e.target.className.includes('search_input')){
-                e.target.style.background = styleColors.faintpurple;
+                e.target.style.background = styleColors.faintcolor;
                 e.target.style.border = `1px solid white`;
             }
         }
@@ -76,7 +76,7 @@ const useTodo = () => {
             if(e.target.className.includes('sort_type')) {
                 e.target.style.color = styleColors.sortsetthov;
             }else if (e.target.className.includes('dltcomp_btn') || e.target.className.includes('empty_btn')) {
-                e.target.style.background = styleColors.faintpurple
+                e.target.style.background = styleColors.faintcolor
             }else {
             e.target.style.border = `transparent`;
             e.target.style.background = `white`;
@@ -88,11 +88,11 @@ const useTodo = () => {
         }
 
         const addBtnHover = (e)=> {
-            e.target.style.background = styleColors.opacitypurple;
+            e.target.style.background = styleColors.opacitycolor;
         }
 
         const rmAddBtnHover = (e)=> {
-            e.target.style.background = styleColors.faintpurple;
+            e.target.style.background = styleColors.faintcolor;
         }
 
         return {changeThemeColor, handleColorChange,inputHoverStyle, inputFocusStyle, mouseOut, sortBoxMouseOut, addBtnHover, rmAddBtnHover}
@@ -394,13 +394,14 @@ const useTodo = () => {
             return colors[num].rgb.join(',');
         }
         const choiceColors = {
-            contbcg : `rgb(${rgbColor(4)})`, //(3)
+            contbcg : `rgb(${rgbColor(3)})`, //(3)
             opacitycontbcg: `rgba(${rgbColor(3)},0.6)`,
-            midpurple : `rgb(${rgbColor(23)})`,
-            inputborderpurple : `rgba(${rgbColor(28)}, 0.4)`,
-            opacitypurple: `rgba(${rgbColor(27)},0.3)`,
-            lightpurple : `rgb(${rgbColor(9)})`, // (8,10,11)
-            faintpurple: `rgba(${rgbColor(28)}, 0.1)`, // (6)
+            midcolorgradient : `rgb(${rgbColor(19)})`,
+            midcolor : `rgb(${rgbColor(23)})`,
+            inputbordercolor : `rgba(${rgbColor(28)}, 0.4)`,
+            opacitycolor: `rgba(${rgbColor(27)},0.3)`,
+            lightcolor : `rgb(${rgbColor(9)})`, // (8,10,11)
+            faintcolor: `rgba(${rgbColor(28)}, 0.1)`, // (6)
             sortsetthov: `rgb(${rgbColor(15)})`, // (12, 8)
             sorttypehov: `rgb(${rgbColor(28)})`, // (29)
         }
