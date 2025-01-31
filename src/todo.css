@@ -2,6 +2,17 @@
     --content-width: 90%;
     --main-transition: all 300ms ease-in-out;
 
+    /* Theme colors */
+    /* --cont_bcg : rgb(244, 216, 255);
+    --mid_purple : rgb(190, 161, 201);
+    --opacity-purple: rgba(190, 161, 201, 0.5);
+    --light_purple : rgb(244, 125, 255);
+    --faint_purple: rgb(242, 199, 255);
+    --sortsett_hov: rgb(208, 117, 212);
+    --sorttype_hov: #7d1485; 
+    --purple: #7a147a; */
+
+
     /* neutral colors */
     --white: white;
     --grey: grey;
@@ -153,6 +164,7 @@
     font-weight: 400;
     font-family: inherit;
     padding-bottom: 0.2rem;
+    /* border-bottom: 1px solid rgba(0, 0, 0, 0.1); */
 }
 
 .content_box {
@@ -166,8 +178,22 @@
     padding-top: 3rem;
 }
 
+.colorShades {
+    width: 90%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.color_arr {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
 .heading {
     width: 100%;
+    /* background:linear-gradient( to left, var(--light_purple), var(--mid_purple)); */
     padding: 1rem 5%;
     display: flex;
     justify-content: center;
@@ -177,6 +203,7 @@
 .header_content {
     width:var(--content-width);
     color: var(--white);
+    /* border-radius: 10px; */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -203,6 +230,7 @@ h3 {
 .settings_active {
     border: none;
     outline: none;
+    /* color: var(--sortsett_hov); */
     transform: scale(1.2);
 }
 
@@ -279,7 +307,12 @@ h3 {
     transition-delay: 200ms;
 }
 
+.add_input:hover, .search_input:hover  {
+    /* border: 1px solid var(--mid_purple); */
+}
+
 .add_input:focus {
+    /* background: var(--faint_purple); */
     border: 1px solid var(--white);
 }
 
@@ -350,6 +383,7 @@ h3 {
     height: inherit;
     padding: 0 1rem;
     border-radius: 0 6px 6px 0;
+    /* background: var(--faint_purple); */
     outline: none;
     border: none;
     font-size: 1rem;
@@ -359,6 +393,7 @@ h3 {
 
 .add_btn:hover {
     color: var(--white);
+    /* background: var(--opacity-purple); */
 }
 
 .add_btn:focus {
@@ -373,6 +408,7 @@ h3 {
     position: relative;
     display: flex;
     transition: var(--main-transition);
+    /* border-bottom: 1px solid rgba(110, 108, 108, 0.3); */
 }
 
 .sortings span {
@@ -382,6 +418,7 @@ h3 {
 .sort_type {
     width: fit-content;
     cursor: pointer;
+    /* color: var(--sortsett_hov); */
     transition: var(--main-transition);
     background-color: transparent;
     padding: 0;
@@ -401,6 +438,7 @@ h3 {
 
 
 .sort_type:hover, .sort_type:focus {
+    /* color: var(--sorttype_hov); */
     border: none;
     outline: none;
 }
@@ -412,6 +450,8 @@ h3 {
     right: 0;
     background: var(--white);
     padding: 0;
+    /* border-top: 1px solid var(--opacity-purple); */
+    /* border-bottom: 1px solid var(--opacity-purple); */
     list-style-type: none;
     z-index: 0;
     visibility: hidden;
@@ -432,17 +472,25 @@ h3 {
     padding: 0.3rem 0;
     margin: 0;
     text-align: left;
+    /* border-bottom: 1px solid var(--opacity-purple); */
     transition: var(--main-transition);
 }
 
 .sort_box li .sort_type {
     padding: 0 0.5rem;
     font-size: 0.9rem;
+    /* font-weight: 400; */
     transition: var(--main-transition);
+    /* color: grey; */
 }
 
 .sort_box li .sort_type:hover {
     color: var(--sorttype_hov);
+}
+
+.curr_sortType {
+    /* font-weight: 600; */
+    /* color: var(--sorttype_hov); */
 }
 
 .sort_box li:last-child {
@@ -462,10 +510,13 @@ h3 {
     flex-direction: column;
     border-radius: 5px;
     overflow-y: auto;
+    /* border-right: 2px inset var(--light_purple); */
+    /* border-left: 2px inset var(--opacity-purple); */
     z-index: 0;
 }
 
 ::-webkit-scrollbar {
+    /* background-color: rgb(207, 207, 207); */
     width: 5px;
 }
 
@@ -478,7 +529,7 @@ h3 {
     border-radius: 5px;
 }
 
-/* make the last of todo_render line opacity 0 */
+/* make the last of tender_render line opacity 0 */
 
 .todo_pad {
     padding: 0.8rem 1rem;
@@ -525,16 +576,13 @@ h3 {
 .todo_check {
     width: 1rem;
     margin-top: 5.5px;
-    background-color: white;
-    border: 1px solid black;
-    outline: 1px solid black;
     align-self: flex-start;
+    /* align-self: center; */
 }
 
 .todo_item {
     flex: 1;
     overflow: hidden;
-    color: rgb(0, 0, 0);
     text-overflow: ellipsis;
     white-space: none;
     transition: all 300ms ease-out;
