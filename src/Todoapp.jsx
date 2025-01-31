@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './todo.css'
 import Todo from './todoEntry';
 import {FaSearch, FaCog, FaAngleDown, FaAngleUp} from 'react-icons/fa';
@@ -7,37 +7,79 @@ import useTodo from './useTodo';
 
 function Todoapp() {
 
-    const {styleColors, baseThemeColor, todoList, sortTypes, activeSortType, sortBox, todoRender, inputRef, todoRenderRef, alert, date, time, alarmTime, editing, footerBtns, searchFound, sortUlRef, effectChange, settingsBtn, openSettings, setOpenSettings, setSortBox, todoToolsControls, todoAlarmControls, sortTodoControls, themeHandler} = useTodo();
+    const {styleColors, baseThemeColor, todoList, sortTypes, activeSortType, sortBox, todoRender, inputRef, todoRenderRef, alert, date, time, alarmTime, editing, footerBtns, searchFound, sortUlRef, effectChange, settingsBtn, openSettings, setOpenSettings, setSortBox, todoToolsControls, todoAlarmControls, sortTodoControls, themeHandler, todoTagRef, alarmConsolesRef} = useTodo();
 
     const {addTodo, toggleCheck, editTodo, deleteTodo, changeRange, emptyAll, activeTodos, deleteComp, initSearch} = todoToolsControls()
 
-    const {changeThemeColor, handleColorChange, inputHoverStyle, inputFocusStyle, mouseOut, sortBoxMouseOut, addBtnHover, rmAddBtnHover} = themeHandler()
+    const {changeThemeColor, handleColorChange, inputHover, inputFocus, sortBoxMouseOut, addBtnHover} = themeHandler()
     
     const {persistSortBox, hideSortBox, chooseSortType} = sortTodoControls();
     
-    const {changeAlarmTime, saveTodoAlarm, toggleAlarmBox, addressExpiredAlarm} = todoAlarmControls()
+    const {changeAlarmTime, saveTodoAlarm, toggleAlarmBox, handleExpiredAlarm} = todoAlarmControls()
 
     const searchEntrance = todoList.length > 4;
 
+    const mobileScreen = window.innerWidth < 650;
+
+    const [extendSearch, setExtendSearch] = useState(mobileScreen ? false : true)
+    const [alarmBoxOpen, setAlarmBoxOpen] = useState(false)
+
+    const removeAlarmBox = (type) => {
+        if(alarmBoxOpen) {
+            toggleAlarmBox (type);
+            setAlarmBoxOpen(false);
+        }
+        return;
+    }
+
+    const handleExtendSearch = () => {
+        setExtendSearch(prev => !prev)
+    }
+
     return (
-        <main className ='container' style={{background: styleColors.contbcg, borderRight: `1px inset ${styleColors.lightcolor}`, borderLeft: `1px inset ${styleColors.inputbordercolor}`}}>
+        <main 
+            className ='container' 
+            style={{background: styleColors.contbcg, borderRight: `1px inset ${styleColors.lightcolor}`, borderLeft: `1px inset ${styleColors.inputbordercolor}`}}
+        >
                 {openSettings && <section className='settings_bcg'>
                     <div className='settings_box' style = {{borderBottom: `1px solid ${styleColors.inputbordercolor}`}}>
                         <div className='theme'>
                             <label className='colorchange_label' htmlFor='color'> Change Theme Color</label>
                             <div className='color_change'>
                                 <button className = 'color_box'>
-                                    <input type="color" id='color' value ={baseThemeColor} onChange = {handleColorChange}/>
+                                    <input 
+                                        type="color" 
+                                        id='color' 
+                                        value ={baseThemeColor} 
+                                        onChange = {handleColorChange}
+                                    />
                                 </button>
-                                {effectChange && <button type='button' onClick ={changeThemeColor}className='changecolor_btn'>Change</button>}
+                                {effectChange && <button 
+                                    type='button' 
+                                    onClick ={changeThemeColor}
+                                    className='changecolor_btn'
+                                >
+                                    Change
+                                </button>}
                             </div>
                         </div>
                     </div>
                 </section>}
-            <section className="heading" onMouseOver={(e)=> toggleAlarmBox (e, 'close')} style = {{background: `linear-gradient(to left, ${styleColors.midcolor}, ${styleColors.midcolorgradient}`}}>
+            <section 
+                className="heading" 
+                onMouseOver={()=> removeAlarmBox ('close')} 
+                style = {{background: `linear-gradient(to left, ${styleColors.midcolor}, ${styleColors.midcolorgradient}`}}
+            >
                 <div className='header_content'>
                     <h3>Todo Application</h3>
-                    <button type = 'button' className='settings_btn' ref = {settingsBtn} onClick = {()=> setOpenSettings(!openSettings)}><FaCog/></button>
+                    <button 
+                        type = 'button' 
+                        className='settings_btn' 
+                        ref = {settingsBtn} 
+                        onClick = {()=> setOpenSettings(!openSettings)}
+                    >
+                        <FaCog/>
+                    </button>
                 </div>
             </section>
             <section className='time_date'>
@@ -46,44 +88,128 @@ function Todoapp() {
             </section>
 
             <div className='content_box' onMouseOver={()=> setOpenSettings(false)}>
-                <h2 className='note' onMouseOver={(e)=> {
-                    hideSortBox;
-                    toggleAlarmBox (e, 'close')}
-                }> {todoList.length > 0 ? `* You have ${activeTodos.length} todos to complete on your list of ${todoList.length}`: 'Your todo list is empty'}</h2>
-                <p className = {`alert ${alert.display && 'show'} alert_${alert.comment}`}> {alert.msg || 'comment'} </p>
-                <div className= {`input_forms ${searchEntrance && 'realign'}`} onMouseOver={(e)=> {
-                    hideSortBox;
-                    toggleAlarmBox (e, 'close')}
+                <h2 
+                    className='note' 
+                    onMouseOver={(e)=> {
+                    hideSortBox(e);
+                    removeAlarmBox('close')}
+                }> 
+                    {todoList.length > 0 ? `* You have ${activeTodos.length} (of ${todoList.length}) todos to complete`: 'Your todo list is empty'}
+                </h2>
+                <p className = {`alert ${alert.display && 'show'} alert_${alert.comment}`}> 
+                    {alert.msg || 'comment'} 
+                </p>
+                
+                <div 
+                    className= {`input_forms ${searchEntrance && 'realign'}`} 
+                    onMouseOver={(e)=> {
+                    hideSortBox(e);
+                    removeAlarmBox('close')}
                 }>
                     <form className='todo_adding'>
-                        <input type= 'text' autoFocus='on' placeholder ='Enter a todo item' ref ={inputRef} onMouseOver= {inputHoverStyle} onMouseDown= {inputFocusStyle} onMouseLeave = {mouseOut} className={`add_input ${alert.comment === 'fail' && 'error'}`}/>
-                        <button type='submit' className= "add_btn" style = {{background: styleColors.faintcolor}} onMouseOver = {addBtnHover} onMouseOut= {rmAddBtnHover} onClick ={addTodo}>{editing.status ? 'Edit' : 'Add todo'}</button>
+                        <input 
+                            type= 'text' 
+                            autoFocus='on' 
+                            placeholder ='Enter a todo' 
+                            ref ={inputRef} 
+                            onMouseOver= {(e) => inputHover(e, "mouse-in")} 
+                            onMouseLeave = {(e) => inputHover(e, "mouse-out")} 
+                            onMouseDown= {inputFocus} 
+                            className={`add_input ${alert.comment === 'fail' && 'error'}`}
+                        />
+                        <button 
+                            type='submit' 
+                            className= "add_btn" 
+                            style = {{background: styleColors.faintcolor}} 
+                            onClick ={addTodo}
+                            onMouseOver = {(e) => addBtnHover(e, 'mouse-in')} 
+                            onMouseOut={(e) => addBtnHover(e, 'mouse-out')} 
+                        >
+                            {editing.status ? 'Edit' : 'Add'}
+                        </button>
                     </form>
                     
-                    
-                    <button className= {`input_box ${searchEntrance && 'input_active'}`}onMouseOver={(e)=> toggleAlarmBox (e, 'close')}>
-                        <input type='text' placeholder= {`Search todo`} onChange={initSearch} onClick={initSearch} onMouseOver= {inputHoverStyle} onMouseDown = {inputFocusStyle} onMouseOut= {mouseOut} className= {`search_input`}/>
-                    <span className='search_icon' style = {{color: styleColors.opacitycolor}}><FaSearch/></span>
+                    <button 
+                        className= {`input_box ${searchEntrance && 'input_active'} ${extendSearch && 'input_box-extend'}`} 
+                        onMouseOver={()=> removeAlarmBox('close')}
+                    >
+                        <input 
+                            type='text' 
+                            placeholder={`Search`} 
+                            onChange={initSearch} 
+                            onClick={initSearch} 
+                            onMouseOver= {(e) => inputHover(e, "mouse-in")} 
+                            onMouseDown = {inputFocus} 
+                            onMouseOut= {(e) => inputHover(e, "mouse-out")} 
+                            className= {`search_input`}
+                        />
+                        <span 
+                            className='search_icon' 
+                            style ={{color: styleColors.opacitycolor}} onClick={handleExtendSearch}
+                        >
+                            <FaSearch/>
+                        </span>
                     </button>
                 </div>
 
-                {todoList.length > 3 && <div className={ footerBtns ? "sortings" : "sortings sortings--noshow"} onMouseOver={(e)=> toggleAlarmBox (e, 'close')}> 
+                {todoList.length > 3 && <div 
+                    className={ footerBtns ? "sortings" : "sortings sortings--noshow"} 
+                    onMouseOver={()=> removeAlarmBox('close')}
+                > 
                     <span onMouseOver={hideSortBox}> sort by : </span>
-                    <button onClick ={()=>setSortBox(!sortBox)} type = 'button' className='sort_type' style={{color: styleColors.opacitycolor}} onMouseOver= {inputHoverStyle} onMouseOut= {mouseOut} onMouseDown= {inputFocusStyle}>{activeSortType}{sortBox ? <FaAngleDown/> : <FaAngleUp/>}</button>
+                    <button 
+                        onClick ={()=>setSortBox(!sortBox)} 
+                        type = 'button' 
+                        className='sort_type' 
+                        style={{color: styleColors.opacitycolor}} 
+                        onMouseOver= {(e) => inputHover(e, "mouse-in")} 
+                        onMouseOut= {(e) => inputHover(e, "mouse-out")} 
+                        onMouseDown= {inputFocus}
+                    >
+                        {activeSortType}
+                        {sortBox ? <FaAngleDown/> : <FaAngleUp/>}
+                    </button>
                     
                     <ul className= {`sort_box ${sortBox && 'sorting_active'}`}
                     style={{borderTop: `1px solid ${styleColors.opacitycolor}`,borderBottom: `1px solid ${styleColors.opacitycolor}`}} onMouseOver={persistSortBox} ref={sortUlRef}>
                     {sortTypes.map((sort, index)=> {
-                        return <li key = {index} style = {{borderBottom: `1px solid ${styleColors.opacitycolor}`,borderLeft: sort === 'Time added' ? '2px solid rgba(141, 24, 139, 0.7)' : 'transparent'}}>
-                            <button type = 'button' onClick={(e)=> chooseSortType(e, sort)} className={`sort_type ${sort === 'Time added' && 'curr_sortType'}`} style={{color: sort === 'Time added' ? styleColors.sorttypehov : 'grey'}} onMouseOver= {inputHoverStyle} onMouseOut= {sortBoxMouseOut} onMouseDown= {inputFocusStyle}>{sort}</button>
+                        return <li 
+                            key = {index} 
+                            style = {{borderBottom: `1px solid ${styleColors.opacitycolor}`, 
+                            borderLeft: sort === activeSortType ? 
+                            `3px solid ${styleColors.midcolor}` : 'transparent'}}
+                            >
+                            <button 
+                                type = 'button' 
+                                onClick={(e)=> chooseSortType(e, sort)} 
+                                className={`sort_type ${sort === 'Time added' && 'curr_sortType'}`} 
+                                style={{color: sort === 'Time added' ? styleColors.sorttypehov : 'grey'}} 
+                                onMouseOver= {(e) => inputHover(e, "mouse-in")} 
+                                onMouseOut= {sortBoxMouseOut} 
+                                onMouseDown= {inputFocus}
+                            >
+                                {sort}
+                            </button>
                         </li>
                     })}
                     </ul>
                 </div>}
-                <section className={`${todoRender.length > 0 ? 'todo_list todo_pad': 'todo_list'}`} style = {{borderRight: `2px inset ${styleColors.lightcolor}`, borderLeft: `2px inset ${styleColors.opacitycolor}`}} onMouseOver={hideSortBox} ref={todoRenderRef}>
-                    {todoRender && todoRender.map((todo) => {
+                <section 
+                    className={`${todoRender.length > 0 ? 'todo_list todo_pad': 'todo_list'}`} 
+                    style = {{borderRight: `2px inset ${styleColors.lightcolor}`, borderLeft: `2px inset ${styleColors.opacitycolor}`}} 
+                    onMouseOver={hideSortBox} 
+                    ref={todoRenderRef}
+                >
+                    {todoRender && todoRender.map((todo, index) => {
                         return <div key={todo.id}>
-                            <Todo key = {todo.id} todo ={todo} toggleCheck ={toggleCheck} deleteTodo ={deleteTodo} editTodo ={editTodo} changeRange={changeRange} toggleAlarmBox = {toggleAlarmBox} saveTodoAlarm = {saveTodoAlarm} changeAlarmTime ={changeAlarmTime} alarmTime= {alarmTime} addressExpiredAlarm= {addressExpiredAlarm}/>
+                            <Todo 
+                                key = {todo.id} 
+                                todo ={{...todo, index}} 
+                                toggleCheck ={toggleCheck} 
+                                deleteTodo ={deleteTodo} 
+                                editTodo ={editTodo} 
+                                changeRange={changeRange} toggleAlarmBox = {toggleAlarmBox} saveTodoAlarm = {saveTodoAlarm} changeAlarmTime ={changeAlarmTime} alarmTime= {alarmTime} handleExpiredAlarm = {handleExpiredAlarm} 
+                                todoTagRef={todoTagRef} alarmConsolesRef={alarmConsolesRef} alarmBoxOpen={alarmBoxOpen} setAlarmBoxOpen={setAlarmBoxOpen} removeAlarmBox={removeAlarmBox}/>
                         </div>
                     })}
                 </section>
@@ -91,8 +217,26 @@ function Todoapp() {
                 <footer>
                     {footerBtns &&
                     <div className= {`wrapper ${todoList.length - activeTodos.length > 0 && 'wrapper_align'}`}>
-                        <button className={`dltcomp_btn ${todoList.length - activeTodos.length > 0 && 'visible'}`} onClick ={deleteComp} style={{background: styleColors.faintcolor}} onMouseOver= {inputHoverStyle} onMouseOut= {mouseOut} onMouseDown= {inputFocusStyle}> Delete Completed </button>
-                        <button className={`empty_btn ${todoList.length > 0 && 'visible'}`} onClick ={emptyAll}style={{background: styleColors.faintcolor}} onMouseOver= {inputHoverStyle} onMouseOut= {mouseOut} onMouseDown= {inputFocusStyle}> Empty list </button>
+                        <button 
+                            className={`dltcomp_btn ${todoList.length - activeTodos.length > 0 && 'visible'}`} 
+                            style={{background: styleColors.faintcolor}} 
+                            onClick ={deleteComp} 
+                            onMouseOver= {(e) => inputHover(e, "mouse-in")} 
+                            onMouseOut= {(e) => inputHover(e, "mouse-out")} 
+                            onMouseDown= {inputFocus}
+                        > 
+                            Delete Completed 
+                        </button>
+                        <button 
+                            className={`empty_btn ${todoList.length > 0 && 'visible'}`} 
+                            style={{background: styleColors.faintcolor}} 
+                            onClick ={emptyAll}
+                            onMouseOver= {(e) => inputHover(e, "mouse-in")} 
+                            onMouseOut= {(e) => inputHover(e, "mouse-out")} 
+                            onMouseDown= {inputFocus}
+                        >
+                            Empty list 
+                        </button>
                     </div>
                     }
                 </footer>
