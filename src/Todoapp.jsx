@@ -42,7 +42,7 @@ function Todoapp() {
             style={{background: styleColors.contbcg, borderRight: `1px inset ${styleColors.lightcolor}`, borderLeft: `1px inset ${styleColors.inputbordercolor}`}}
         >
                 {openSettings && <section className='settings_bcg'>
-                    <div className='settings_box' style = {{borderBottom: `1px solid ${styleColors.inputbordercolor}`}}>
+                    <div className='settings_box' style = {{borderBottom: `1px solid ${styleColors.inputborderpurple}`}}>
                         <div className='theme'>
                             <label className='colorchange_label' htmlFor='color'> Change Theme Color</label>
                             <div className='color_change'>
@@ -171,7 +171,7 @@ function Todoapp() {
                     </button>
                     
                     <ul className= {`sort_box ${sortBox && 'sorting_active'}`}
-                    style={{borderTop: `1px solid ${styleColors.opacitycolor}`,borderBottom: `1px solid ${styleColors.opacitycolor}`}} onMouseOver={persistSortBox} ref={sortUlRef}>
+                    style={{borderTop: `1px solid ${styleColors.opacitypurple}`,borderBottom: `1px solid ${styleColors.opacitypurple}`}} onMouseOver={persistSortBox} ref={sortUlRef}>
                     {sortTypes.map((sort, index)=> {
                         return <li 
                             key = {index} 

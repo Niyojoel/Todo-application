@@ -47,9 +47,9 @@ const useTodo = () => {
 
     function themeHandler () {
         const changeThemeColor = ()=> {
-            setColors(new Values(baseThemeColor).all(colorVar))
-            setEffectChange(false)
-            setOpenSettings(false)
+        setColors(new Values(baseThemeColor).all(colorVar))
+        setEffectChange(false)
+        setOpenSettings(false)
         }
 
         const handleColorChange = (e) => {
@@ -381,14 +381,13 @@ const useTodo = () => {
             return colors[num].rgb.join(',');
         }
         const choiceColors = {
-            contbcg : `rgb(${rgbColor(3)})`, //(3)
+            contbcg : `rgb(${rgbColor(4)})`, //(3)
             opacitycontbcg: `rgba(${rgbColor(3)},0.6)`,
-            midcolorgradient : `rgb(${rgbColor(19)})`,
-            midcolor : `rgb(${rgbColor(23)})`,
-            inputbordercolor : `rgba(${rgbColor(28)}, 0.4)`,
-            opacitycolor: `rgba(${rgbColor(27)},0.3)`,
-            lightcolor : `rgb(${rgbColor(9)})`, // (8,10,11)
-            faintcolor: `rgba(${rgbColor(28)}, 0.1)`, // (6)
+            midpurple : `rgb(${rgbColor(23)})`,
+            inputborderpurple : `rgba(${rgbColor(28)}, 0.4)`,
+            opacitypurple: `rgba(${rgbColor(27)},0.3)`,
+            lightpurple : `rgb(${rgbColor(9)})`, // (8,10,11)
+            faintpurple: `rgba(${rgbColor(28)}, 0.1)`, // (6)
             sortsetthov: `rgb(${rgbColor(15)})`, // (12, 8)
             sorttypehov: `rgb(${rgbColor(28)})`, // (29)
         }
