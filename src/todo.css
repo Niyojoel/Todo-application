@@ -171,11 +171,6 @@
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-<<<<<<< HEAD
-    gap: 0.3rem 4rem;
-    align-items: center;
-=======
->>>>>>> parent of fc905a4 (edited todos styles)
     justify-content: space-between;
     color: #7e7e7e;
     font-size: 0.95rem;
@@ -383,17 +378,6 @@ h3 {
     opacity: 1;
 }
 
-<<<<<<< HEAD
-.search_icon {
-    height: 2.2rem;
-    place-content: center;
-    border-radius: 0 6px 6px 0;
-    padding-left: 0.5rem;
-    background: white !important;
-}
-
-.search_icon svg {
-=======
 .search_input:focus {
     /* background: var(--faint_purple); */
     /* background: var(--faint_purple); */
@@ -407,7 +391,6 @@ h3 {
     right: 5%;
     transform: translateY(-50%);
     /* color: var(--faint_purple); */
->>>>>>> parent of fc905a4 (edited todos styles)
     font-size: 0.9rem;
     margin-right: 0.5rem;
     transition: var(--main-transition);
@@ -627,8 +610,6 @@ h3 {
     gap: 1rem;
 }
 
-<<<<<<< HEAD
-=======
 /* .line:last-of-type {
     opacity: 0;
 } */
@@ -647,7 +628,6 @@ h3 {
     font-weight: 400;
 }
 
->>>>>>> parent of fc905a4 (edited todos styles)
 .line {
     opacity: 0.3;
 }
