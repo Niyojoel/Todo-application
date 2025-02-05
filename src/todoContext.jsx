@@ -1,7 +1,8 @@
-import {useRef, useState, useEffect} from 'react';
+import {useRef, useState, useEffect, createContext, useContext} from 'react';
 import Values from 'values.js';
 
-const useTodo = () => {
+const TodoContext = createContext(null);
+export const TodoProvider = ({children}) => {
     const isMounted = useRef(false);
 
     // Theme colors
@@ -13,7 +14,7 @@ const useTodo = () => {
 
     //Todos vars
     const [todoList, setTodoList] = useState([])
-    const [alert, setAlert] = useState({display:false, msg:'', comment:''});
+    const [alert, setAlert] = useState({display: false, msg: '', comment: ''});
     const [editing, setEditing] = useState({status: false, editID: null});
     
     //UI elements
@@ -27,7 +28,7 @@ const useTodo = () => {
     const sortUlRef = useRef(null);
     const todoTagRef = useRef([]);
     const alarmConsolesRef = useRef([]);
-    const todoRenderRef = useRef(null);
+    const todosConsoleRef = useRef(null);
     const [searchFound, setSearchFound] = useState('');
     const [footerBtns, setFooterBtns] = useState(true);
     
@@ -35,24 +36,31 @@ const useTodo = () => {
     const [sortBox, setSortBox] = useState(false);
     const [activeSortType, setActiveSortType] = useState('')
     const sortTypes = ['Time added', 'Todo imp.', 'Alarm time', 'Alp order'];
-
+    
     //Alarm reminder
     const [alarmTime, setAlarmTime] = useState('');
+    const [alarmBoxOpen, setAlarmBoxOpen] = useState(false)
     const [playTune, setPlayTune] = useState(false);
+    const [newTune, setNewTune] = useState([])
+    const [alarmTunes, setAlarmTunes] = useState([]);
     
 
     function themeHandler () {
         const changeThemeColor = ()=> {
-        setColors(new Values(baseThemeColor).all(colorVar))
-        setEffectChange(false)
-        setOpenSettings(false)
+            setColors(new Values(baseThemeColor).all(colorVar))
+            setEffectChange(false)
+            setOpenSettings(false)
         }
 
         const handleColorChange = (e) => {
             setBaseThemeColor(e.target.value);
             setEffectChange(true);
         }
-
+        return {changeThemeColor, handleColorChange}
+    }
+  
+    function inputThemeStyles () {
+         //Theme styles for input elements
         const elClass = (e, checkClass) => e.target.className.includes(checkClass);
         const elStyle = e => e.target.style
 
@@ -61,6 +69,9 @@ const useTodo = () => {
             const elStyle_ = elStyle(e);
 
             if(elClass(e, 'sort_type')) {
+                type === 'mouse-in' ?
+                    elStyle_.color = styleColors.sorttypehov:
+                    elStyle_.color = styleColors.opacitycolor;
                 elStyle_.color = styleColors.sorttypehov;
             }else if (elClass(e, 'dltcomp_btn') || elClass(e, 'empty_btn')) {
                 type === 'mouse-in' ?
@@ -72,7 +83,6 @@ const useTodo = () => {
                     elStyle_.border = `1px solid ${styleColors.inputbordercolor}`:
                     e.target.style = {border:`transparent`, background: `white`};
             }
-
         }
 
         const inputFocus = (e)=> {
@@ -93,10 +103,53 @@ const useTodo = () => {
         const addBtnHover = (e, type)=> {
             const elStyle_ = elStyle(e);
             type === "mouse-in" ? elStyle_.background = styleColors.opacitycolor : elStyle_.background = styleColors.faintcolor;
-         }
+        }
 
-        return {changeThemeColor, handleColorChange, inputFocus, inputHover, sortBoxMouseOut, addBtnHover}
+         return {inputFocus, inputHover, sortBoxMouseOut, addBtnHover}
     }
+
+    function cssComplimentaryStyles () {
+    
+        //styling for last todo 
+        let  consolesRef;
+        if(todosConsoleRef.current !== null) {
+            consolesRef = todosConsoleRef?.current;
+        }
+        let consolesTodos;
+        if(consolesRef?.children && consolesRef.children.length) {
+            consolesTodos = consolesRef?.children;
+            const todosEl= Array.from(consolesTodos)
+
+            const todoHrLines = todosEl.map((el)=> {
+                return el.children[0].children[1];
+            })
+
+            let lastLine;
+
+            if(todoHrLines && todoHrLines.length) {
+                lastLine = todoHrLines[todoHrLines.length - 1];
+            } 
+
+            if(lastLine) lastLine.style.display = 'none';
+
+            //styling for last todo btns
+            const todoBtns = todosEl.map((el)=> {
+                return el.children[0].children[0].children[2].children[1];
+            })
+
+            let lastTodoBtns;
+
+            if(todoBtns && todoBtns.length) {
+                lastTodoBtns = todoBtns[todoBtns.length - 1];
+            } 
+
+            if(lastTodoBtns && window.innerWidth < 650) {
+                lastTodoBtns.style.top = '50%'
+                lastTodoBtns.style.borderBottom = '8px solid white';
+            };
+        }
+        return;
+    };
 
     function todoToolsControls () {
         const alertControl = (display=false, msg='', comment='')=> {
@@ -179,26 +232,32 @@ const useTodo = () => {
         }
 
         const todoOrderStyles = (todos)=> {
-            const todosEl= Array.from(todoRenderRef.current.children)
-            // const todoLabel = todoTagRef.current || []
-
-            // console.log(todoLabel);
+            let consolesRef;
+            if(todosConsoleRef.current !== null) {
+                consolesRef = todosConsoleRef?.current;
+            }
             
-            const todoLabel = todosEl.map((el)=> {
-            return el.children[0].children[0].children[0].children[1];
-            })
-
-            todos.map((todo)=> {
-                todoLabel.find((lab)=> {
-                    if (lab.innerText === todo.name && !todo.complete){
-                // todoLabel?.find((lab)=> {
-                    // if (lab.innerText && lab.innerText === todo.name && !todo.complete){
-                        const fontweight = ((todo.order)/10 * 50) + 400;   
-                        lab.style.fontWeight = `${fontweight}`; 
-                    }
-                    return;
+            let consolesTodos;
+            if(consolesRef?.children && consolesRef.children.length) {
+                consolesTodos = consolesRef?.children;
+                const todosEl= Array.from(consolesTodos);
+                
+                const todoLabel = todosEl.map((el)=> {
+                return el.children[0].children[0].children[0].children[1];
                 })
-            })
+
+                todos.map((todo)=> {
+                    todoLabel.find((lab)=> {
+                        if (lab.innerText === todo.name && !todo.complete){
+                            const fontweight = ((todo.order)/10 * 50) + 400;   
+                            lab.style.fontWeight = `${fontweight}`; 
+                        }
+                        return;
+                    })
+                })
+            }
+            return;
+
         }
     
         const emptyAll = ()=> {
@@ -219,19 +278,17 @@ const useTodo = () => {
             if(e.target.value) {
                 const foundTodos = dupList.filter((list)=>
                 list.name.toLowerCase().includes(e.target.value.toLowerCase()));
-                if(foundTodos) {
+                if(foundTodos.length) {
                     setTodoRender(foundTodos);
                     setFooterBtns(false);
                     setSearchFound('found');
-                }
-                if (foundTodos.length === 0){
+                }else{
                     setTodoRender([]);
                     return setSearchFound('none');
                 }
             }else { 
                 setTodoRender(todoList);
                 setFooterBtns(true);
-    
             }
         }
     return {alertControl, addTodo, toggleCheck, editTodo, deleteTodo, changeRange, emptyAll, activeTodos, deleteComp, initSearch, todoOrderStyles}
@@ -265,12 +322,14 @@ const useTodo = () => {
         }
 
         const sortTypeEffect = (type, todos = [...todoRender])=> {
-             let reorderedTodos = [...todos.sort((a, b)=>{
+    
+             let reorderedTodos = [...todos.sort((a, b)=> {
                 if (type === 'Todo imp.') return b.order - a.order;
                 if (type === 'Alp order') return a.name.localeCompare(b.name);
                 if (type === 'Time added') return b.id - a.id;
                 if (type === 'Alarm time') return a.alarm.time.localeCompare(b.alarm.time);
-            }).sort((a,b)=> a.complete - b.complete)];
+            }).sort((a,b) => a.complete - b.complete).sort((a, b) => type === 'Alarm time' && b.alarm.active.toString().localeCompare(a.alarm.active.toString()))];
+
             return reorderedTodos
         }
 
@@ -278,23 +337,36 @@ const useTodo = () => {
     }
 
     function todoAlarmControls () {
-        const toggleAlarmBox = (type, e = undefined)=> {
-             console.log(type);
-             const alarmConsoles = alarmConsolesRef.current || [];
+        const removeAlarmBox = (id = undefined) => {
+            if(alarmBoxOpen) {
+                const alarmConsoles = alarmConsolesRef.current || [];
 
-            if(e === undefined) {
-                return type === 'close' &&
-                alarmConsoles.map(consol => consol.classList.remove('show_alarmbox'));
+                if(id) {
+                    return alarmConsoles.find(consol => consol.getAttribute('id') === id).classList.remove('show_alarmbox');
+                }else {
+                    alarmConsoles.map(consol => consol.classList.remove('show_alarmbox'));
+                }
+
+                setAlarmBoxOpen(false);
             }
+            return;
+        }
 
-            return alarmConsoles.map((consol)=> {
-                if(consol.id === e.currentTarget.id && type ==='open') {
+        const openAlarmBox = (id) => {
+            const alarmConsoles = alarmConsolesRef.current || [];
+
+            console.log('still open')
+            alarmConsoles.map((consol)=> {
+                console.log(consol.getAttribute('id'));
+                if(consol?.getAttribute('id') === id) {
                     consol.classList.add('show_alarmbox'); 
                 }else {
                     consol.classList.remove('show_alarmbox');
                 }
                 return consol;
             });
+
+            setAlarmBoxOpen(true);
         }
 
         const changeAlarmTime = (e)=> {
@@ -314,7 +386,7 @@ const useTodo = () => {
     
             const todoActiveAlarmList = todoAlarmList.map((todo)=> {
                 if (todo.id === id) {
-                    todo.alarm = {...todo.alarm, active: !todo.alarm.active};
+                    todo.alarm = {...todo.alarm, active: todo.alarm.active === true ? false : true};
                     return todo;
                 }
                 return todo;
@@ -367,7 +439,37 @@ const useTodo = () => {
             // setTodoList(addressedList);
         }
 
-        return {toggleAlarmBox, changeAlarmTime, saveTodoAlarm, checkAlarm, handleExpiredAlarm};
+        return {openAlarmBox, removeAlarmBox, changeAlarmTime, saveTodoAlarm, checkAlarm, handleExpiredAlarm};
+    }
+
+    function alarmTunesControl () {
+        const handleNewTune = (files) => {
+            console.log(files);
+            const files_ = Array.from(files).map((file)=> {
+                return file;
+            })
+            console.log(files_);
+            setNewTune(files_)
+        }
+
+        const UploadTune = () => {
+            const existingTune = alarmTunes.find(tune => tune.name === newTune[0].name)
+            if (existingTune === undefined) {
+                setAlarmTunes(prev => ([...prev, ...newTune]));
+                setNewTune([]);
+            }
+            return;
+        }
+
+        const removeTune = (name) => {
+            console.log(name);
+            const tunes = [...alarmTunes]
+            console.log(tunes);
+            const updatedTunes = tunes.filter(tune => tune.name !== name)
+            setAlarmTunes(updatedTunes);
+        }
+
+        return {handleNewTune, UploadTune, removeTune}
     }
 
     const {addTodo, alertControl, todoOrderStyles} = todoToolsControls()
@@ -395,19 +497,22 @@ const useTodo = () => {
             faintcolor: `rgba(${rgbColor(28)}, 0.1)`, // (6)
             sortsetthov: `rgb(${rgbColor(15)})`, // (12, 8)
             sorttypehov: `rgb(${rgbColor(28)})`, // (29)
+            cogcolor: `rgb(${rgbColor(30)})`, // (29)
         }
         setStyleColors(choiceColors)
     }, [colors])
 
     // Setting Icon toggle
     useEffect(()=> {
-        if(openSettings) {
-            settingsBtn.current.classList.add('settings_active');
-            settingsBtn.current.style.color = styleColors.sortsetthov;
-        }else {
-            settingsBtn.current.classList.remove('settings_active');
-            settingsBtn.current.style.color = 'white';
-        } 
+        if(settingsBtn.current !== null) {
+            if(openSettings) {
+                settingsBtn.current.classList.add('settings_active');
+                settingsBtn.current.style.color = styleColors.cogcolor;
+            }else {
+                settingsBtn.current.classList.remove('settings_active');
+                settingsBtn.current.style.color = 'white';
+            } 
+        }
     }, [openSettings, styleColors])
 
     const LOCAL_STORAGE_KEY ='Todos';
@@ -435,27 +540,39 @@ const useTodo = () => {
     
     // Getting local storage on initial load
     useEffect (()=> {
-        const recalledTodo = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))
-        if (recalledTodo)  {
-            setTodoList(recalledTodo.todoList);
-            setActiveSortType(recalledTodo.activeSortType ? recalledTodo.activeSortType : 'Time added');  
-            sortTypeEffect(recalledTodo.activeSortType, recalledTodo.todoList);         
-            setBaseThemeColor(recalledTodo.baseThemeColor)
-            setColors(new Values(recalledTodo.baseThemeColor).all(colorVar))
+        const storedTodo = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))
+        if (storedTodo)  {
+            setTodoList(storedTodo.todoList);
+            setActiveSortType(storedTodo.activeSortType ? storedTodo.activeSortType : 'Time added');  
+            sortTypeEffect(storedTodo.activeSortType, storedTodo.todoList);         
+            setBaseThemeColor(storedTodo.baseThemeColor)
+            setColors(new Values(storedTodo.baseThemeColor).all(colorVar))
+            setAlarmTunes(storedTodo.tunes)
         };
     }, [])
     
     //Saving to local storage
     useEffect (()=> {
-        const todosInfo = {todoList: todoList, activeSortType: activeSortType, baseThemeColor: baseThemeColor}
+        const todosInfo = {
+            todoList: todoList, 
+            activeSortType: activeSortType, 
+            baseThemeColor: baseThemeColor, 
+            tunes: alarmTunes
+        }
         isMounted.current ? localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todosInfo)): isMounted.current = true;
         setTodoRender(todosInfo.todoList);        
-    }, [todoList, activeSortType, baseThemeColor])
+    }, [todoList, activeSortType, baseThemeColor, alarmTunes])
     
     //Style and order effect
     useEffect (()=> {
-        todoOrderStyles(todoRender);
-        sortTypeEffect(activeSortType, todoRender);
+        const effectTimeout = setTimeout(() => {
+            todoOrderStyles(todoRender);
+            sortTypeEffect(activeSortType, todoRender);
+            cssComplimentaryStyles();
+        }, 2000);
+
+        return ()=> clearInterval(effectTimeout);
+
     }, [todoRender])
 
     //Alert 
@@ -467,7 +584,14 @@ const useTodo = () => {
         return ()=> clearInterval(alertTimer);
     },[todoList, addTodo])
 
-    return {colors, date, time, alarmTime, setColors, baseThemeColor, setBaseThemeColor, styleColors, colorVar, todoList, sortTypes, activeSortType, sortBox, setSortBox, effectChange, setEffectChange,openSettings, setOpenSettings, settingsBtn, todoRender, inputRef, todoRenderRef, alert, editing, footerBtns, searchFound, todoToolsControls, sortTodoControls, todoAlarmControls, themeHandler, todoTagRef, sortUlRef, alarmConsolesRef}
+    return <TodoContext.Provider value={{colors, date, time, alarmTime, setColors, baseThemeColor, setBaseThemeColor, styleColors, colorVar, todoList, sortTypes, activeSortType, sortBox, setSortBox, effectChange, setEffectChange,openSettings, setOpenSettings, settingsBtn, todoRender, inputRef, todosConsoleRef, alert, editing, footerBtns, searchFound, todoToolsControls, sortTodoControls, todoAlarmControls, themeHandler, inputThemeStyles, todoTagRef, sortUlRef, alarmConsolesRef, alarmTunes, setAlarmTunes, newTune, setNewTune, alarmTunesControl}}>
+        {children}
+    </TodoContext.Provider>
 }
 
-export default useTodo;
+export const useTodoContext = () => {
+    const value = useContext(TodoContext);
+    if(value == null) throw Error ("Cannot use outside of TodoProvider");
+
+    return value;
+}

@@ -1,5 +1,5 @@
 import { Temporal } from "temporal-polyfill";
-import useTodo from "../useTodo";
+import useTodoContext from "../useTodoContext";
 
 const {
   styleColors,
@@ -28,9 +28,7 @@ const {
   todoAlarmControls,
   sortTodoControls,
   themeHandler,
-} = useTodo();
-
-
+} = useTodoContext();
 
 const currTime = alarmTime; //Temporal.Now.plainTimeISO();
 

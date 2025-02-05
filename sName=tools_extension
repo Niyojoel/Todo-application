@@ -8,12 +8,12 @@
  import './todo.css'[m
  import Todo from './todoEntry';[m
  import {FaSearch, FaCog, FaAngleDown, FaAngleUp} from 'react-icons/fa';[m
-[36m@@ -7,79 +7,37 @@[m [mimport useTodo from './useTodo';[m
+[36m@@ -7,79 +7,37 @@[m [mimport useTodoContext from './useTodoContext';[m
  [m
  function Todoapp() {[m
  [m
-[31m-    const {styleColors, baseThemeColor, todoList, sortTypes, activeSortType, sortBox, todoRender, inputRef, todoRenderRef, alert, date, time, alarmTime, editing, footerBtns, searchFound, sortUlRef, effectChange, settingsBtn, openSettings, setOpenSettings, setSortBox, todoToolsControls, todoAlarmControls, sortTodoControls, themeHandler, todoTagRef, alarmConsolesRef} = useTodo();[m
-[32m+[m[32m    const {styleColors, baseThemeColor, todoList, sortTypes, activeSortType, sortBox, todoRender, inputRef, todoRenderRef, alert, date, time, alarmTime, editing, footerBtns, searchFound, sortUlRef, effectChange, settingsBtn, openSettings, setOpenSettings, setSortBox, todoToolsControls, todoAlarmControls, sortTodoControls, themeHandler} = useTodo();[m
+[31m-    const {styleColors, baseThemeColor, todoList, sortTypes, activeSortType, sortBox, todoRender, inputRef, todoRenderRef, alert, date, time, alarmTime, editing, footerBtns, searchFound, sortUlRef, effectChange, settingsBtn, openSettings, setOpenSettings, setSortBox, todoToolsControls, todoAlarmControls, sortTodoControls, themeHandler, todoTagRef, alarmConsolesRef} = useTodoContext();[m
+[32m+[m[32m    const {styleColors, baseThemeColor, todoList, sortTypes, activeSortType, sortBox, todoRender, inputRef, todoRenderRef, alert, date, time, alarmTime, editing, footerBtns, searchFound, sortUlRef, effectChange, settingsBtn, openSettings, setOpenSettings, setSortBox, todoToolsControls, todoAlarmControls, sortTodoControls, themeHandler} = useTodoContext();[m
  [m
      const {addTodo, toggleCheck, editTodo, deleteTodo, changeRange, emptyAll, activeTodos, deleteComp, initSearch} = todoToolsControls()[m
  [m
@@ -912,11 +912,11 @@
          </section>[m
      );[m
  }[m
-[1mdiff --git a/src/useTodo.jsx b/src/useTodo.jsx[m
+[1mdiff --git a/src/useTodoContext.jsx b/src/useTodoContext.jsx[m
 [1mindex 91a6416..8de03ad 100644[m
-[1m--- a/src/useTodo.jsx[m
-[1m+++ b/src/useTodo.jsx[m
-[36m@@ -18,19 +18,12 @@[m [mconst useTodo = () => {[m
+[1m--- a/src/useTodoContext.jsx[m
+[1m+++ b/src/useTodoContext.jsx[m
+[36m@@ -18,19 +18,12 @@[m [mconst useTodoContext = () => {[m
      [m
      //UI elements[m
      const [todoRender, setTodoRender] = useState([]);[m
@@ -938,7 +938,7 @@
      const todoRenderRef = useRef(null);[m
      const [searchFound, setSearchFound] = useState('');[m
      const [footerBtns, setFooterBtns] = useState(true);[m
-[36m@@ -56,49 +49,53 @@[m [mconst useTodo = () => {[m
+[36m@@ -56,49 +49,53 @@[m [mconst useTodoContext = () => {[m
              setBaseThemeColor(e.target.value);[m
              setEffectChange(true);[m
          }[m
@@ -1022,7 +1022,7 @@
      }[m
  [m
      function todoToolsControls () {[m
-[36m@@ -106,9 +103,8 @@[m [mconst useTodo = () => {[m
+[36m@@ -106,9 +103,8 @@[m [mconst useTodoContext = () => {[m
                  setAlert({display, msg, comment})[m
          }[m
      [m
@@ -1034,7 +1034,7 @@
              const tagName = inputRef.current.value;[m
              if(!tagName) {[m
                  alertControl(true, 'pls enter some value', 'fail')[m
-[36m@@ -132,17 +128,19 @@[m [mconst useTodo = () => {[m
+[36m@@ -132,17 +128,19 @@[m [mconst useTodoContext = () => {[m
              inputRef.current.focus();[m
          }[m
      [m
@@ -1056,7 +1056,7 @@
              } [m
          }[m
  [m
-[36m@@ -158,8 +156,8 @@[m [mconst useTodo = () => {[m
+[36m@@ -158,8 +156,8 @@[m [mconst useTodoContext = () => {[m
              alertControl(true, 'A todo item removed', 'success')[m
          }[m
      [m
@@ -1067,7 +1067,7 @@
              let range; [m
              // debugger[m
              const orderedList= todoList.map((todo)=> {[m
-[36m@@ -167,9 +165,9 @@[m [mconst useTodo = () => {[m
+[36m@@ -167,9 +165,9 @@[m [mconst useTodoContext = () => {[m
                      todo.order = parseInt(e.target.value)[m
                      if(todo.order > 0) {[m
                          range = Math.ceil(todo.order/10)[m
@@ -1079,7 +1079,7 @@
                      }[m
                      return todo;[m
                  }[m
-[36m@@ -179,15 +177,18 @@[m [mconst useTodo = () => {[m
+[36m@@ -179,15 +177,18 @@[m [mconst useTodoContext = () => {[m
          }[m
  [m
          const todoOrderStyles = (todos)=> {[m
@@ -1102,7 +1102,7 @@
                  })[m
              })[m
          }[m
-[36m@@ -240,17 +241,16 @@[m [mconst useTodo = () => {[m
+[36m@@ -240,17 +241,16 @@[m [mconst useTodoContext = () => {[m
          const chooseSortType = (e, id)=> {[m
              const sortType = e.target.innerText;[m
              setActiveSortType(sortType);[m
@@ -1126,7 +1126,7 @@
              }[m
          [m
              setSortBox(false);[m
-[36m@@ -259,14 +259,16 @@[m [mconst useTodo = () => {[m
+[36m@@ -259,14 +259,16 @@[m [mconst useTodoContext = () => {[m
          }[m
  [m
          const sortTypeEffect = (type, todos = [...todoRender])=> {[m
@@ -1151,7 +1151,7 @@
              return reorderedTodos[m
          }[m
  [m
-[36m@@ -274,19 +276,30 @@[m [mconst useTodo = () => {[m
+[36m@@ -274,19 +276,30 @@[m [mconst useTodoContext = () => {[m
      }[m
  [m
      function todoAlarmControls () {[m
@@ -1192,7 +1192,7 @@
                      consol.classList.remove('show_alarmbox');[m
                  }[m
                  return consol;[m
-[36m@@ -301,7 +314,7 @@[m [mconst useTodo = () => {[m
+[36m@@ -301,7 +314,7 @@[m [mconst useTodoContext = () => {[m
              }[m
              return todo;[m
             })[m
@@ -1201,7 +1201,7 @@
          }[m
  [m
          const saveTodoAlarm = (e, id)=> {[m
-[36m@@ -350,7 +363,7 @@[m [mconst useTodo = () => {[m
+[36m@@ -350,7 +363,7 @@[m [mconst useTodoContext = () => {[m
              timeNow === 'true' && timeForTodo(timeNow, todoAlarmExecutedList);[m
          }[m
          [m
@@ -1210,7 +1210,7 @@
              const todoList_ = [...todoList];[m
              const addressedList = todoList_.map((todo)=> {[m
                  if (todo.id === id) {[m
-[36m@@ -363,7 +376,7 @@[m [mconst useTodo = () => {[m
+[36m@@ -363,7 +376,7 @@[m [mconst useTodoContext = () => {[m
              // setTodoList(addressedList);[m
          }[m
  [m
@@ -1219,7 +1219,7 @@
      }[m
  [m
      const {addTodo, alertControl, todoOrderStyles} = todoToolsControls()[m
-[36m@@ -463,7 +476,7 @@[m [mconst useTodo = () => {[m
+[36m@@ -463,7 +476,7 @@[m [mconst useTodoContext = () => {[m
          return ()=> clearInterval(alertTimer);[m
      },[todoList, addTodo])[m
  [m
@@ -1227,5 +1227,5 @@
 [32m+[m[32m    return {colors, date, time, alarmTime, setColors, baseThemeColor, setBaseThemeColor, styleColors, colorVar, todoList, sortTypes, activeSortType, sortBox, setSortBox, effectChange, setEffectChange,openSettings, setOpenSettings, settingsBtn, todoRender, inputRef, todoRenderRef, alert, editing, footerBtns, searchFound, todoToolsControls, sortTodoControls, todoAlarmControls, themeHandler}[m
  }[m
  [m
- export default useTodo;[m
+ export default useTodoContext;[m
 \ No newline at end of file[m
