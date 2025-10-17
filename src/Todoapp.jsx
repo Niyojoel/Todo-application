@@ -4,11 +4,14 @@ import Todo from './todoEntry';
 import {FaSearch, FaCog, FaAngleDown, FaAngleUp} from 'react-icons/fa';
 import {useTodoContext} from './todoContext';
 import Settings from './Settings';
+import {DndContext, closestCorners} from '@dnd-kit/core';
+import {SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy} from '@dnd-kit/sortable';
+import { KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 
 function Todoapp() {
     const {styleColors, todoList, sortTypes, activeSortType, sortBox, todoRender, inputRef, todosConsoleRef, alert, date, time, editing, footerBtns, searchFound, sortUlRef, settingsBtn, openSettings, setOpenSettings, setSortBox, todoToolsControls, todoAlarmControls, sortTodoControls, inputThemeStyles} = useTodoContext();
 
-    const {addTodo, emptyAll, activeTodos, deleteComp, initSearch} = todoToolsControls()
+    const {addTodo, emptyAll, activeTodos, deleteComp, initSearch, handleDragEnd} = todoToolsControls()
 
     const {inputHover, inputFocus, sortBoxMouseOut, addBtnHover} = inputThemeStyles()
     
@@ -26,6 +29,13 @@ function Todoapp() {
         setExtendSearch(prev => !prev)
     }
 
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(TouchSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    )
     return (
         <main
             className ='container'
@@ -44,6 +54,7 @@ function Todoapp() {
             </section>
 
             <div className='content_box' onMouseOver={()=> setOpenSettings(false)}>
+                {/* todos note */}
                 <h2 className='note' 
                     onMouseOver={()=> {
                     sortBoxState("hide");
@@ -52,12 +63,14 @@ function Todoapp() {
                     {todoList.length > 0 ? `* You have ${activeTodos.length} /${todoList.length} todos to complete.` : 'Your todo list is empty'}
                 </h2>
 
+                {/* alert */}
                 <p className = {`alert ${alert.display && 'show'} alert_${alert.comment}`}> {alert.msg || 'comment'} </p>
 
                 <div className= {`input_forms ${searchEntrance && 'realign'}`} onMouseOver={()=> {
                     sortBoxState('hide');
                     removeAlarmBox()
                 }}>
+                    {/* add todo */}
                     <form className='todo_adding'>
                         <input
                             type= 'text'
@@ -80,7 +93,7 @@ function Todoapp() {
                             {editing.status ? 'Edit' : 'Add'}
                         </button>
                     </form>
-
+                    {/* search */}
                     <button
                         className= {`input_box ${searchEntrance && 'input_active'} ${extendSearch && 'input_box-extend'}`}
                         onMouseOver={() => removeAlarmBox()}
@@ -102,7 +115,7 @@ function Todoapp() {
                         </span>
                     </button>
                 </div>
-
+                {/* sorting */}
                 {todoList.length > 3 && <div className={ footerBtns ? "sortings" : "sortings sortings--noshow"} onMouseOver={() => removeAlarmBox()}> 
                     <span onMouseOver={()=>sortBoxState('hide')}> sort by : </span>
                     <button
@@ -138,21 +151,28 @@ function Todoapp() {
                     })}
                     </ul>
                 </div>}
+                {/* todolist */}
                 <section className={`${todoRender.length > 0 ? 'todo_list todo_pad': 'todo_list'}`} style = {{borderRight: `2px inset ${styleColors.lightcolor}`, borderLeft: `2px inset ${styleColors.opacitycolor}`}} onMouseOver={()=>sortBoxState('hide')} >
-                    <div className='todos_console' ref={todosConsoleRef}>                    
-                        {todoRender && todoRender.map((todo, index) => {
-                        return <div key={todo.id}>
-                            <Todo
-                                key = {todo.id}
-                                todo ={{...todo, index}}
-                            />
+                    <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd} sensors={sensors}>
+                        <div className='todos_console' ref={todosConsoleRef}>   
+
+                            <SortableContext items={todoRender} strategy={verticalListSortingStrategy}>
+                                {todoRender && todoRender.map((todo, index) => {
+                                return <div key={todo.id}>
+                                    <Todo
+                                        key = {todo.id}
+                                        todo ={{...todo, index}}
+                                    />
+                                    </div>
+                                })}
+                            </SortableContext>  
                         </div>
-                    })}
-                    </div>
+                    </DndContext>
                     <div className="search_not-found">
                         {searchFound === 'none' && <p> Keyword does not match...</p>}   
                     </div>
                 </section>
+                {/* footer */}
                 <footer>
                     {footerBtns &&
                     <div className= {`wrapper ${todoList.length - activeTodos.length > 0 && 'wrapper_align'}`}>

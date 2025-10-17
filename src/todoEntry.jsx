@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react';
-import {FaEdit, FaTrash, FaClock, FaTimes} from 'react-icons/fa';
+import {FaEdit, FaTrash, FaClock, FaTimes,} from 'react-icons/fa';
 import { Temporal } from 'temporal-polyfill';
 import { useTodoContext } from './todoContext';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 
 const todoEntry = ({todo}) => {
@@ -12,6 +14,8 @@ const todoEntry = ({todo}) => {
         todoAlarmControls, 
         todoTagRef, 
         alarmConsolesRef, 
+        alarmAudioRef,
+        activeTune
     } = useTodoContext();
 
     const {
@@ -31,34 +35,43 @@ const todoEntry = ({todo}) => {
 
 
     const {name, id, complete, order, alarm, index} = todo;
-    // const [toolLabel, setToolLabel] = useState('');
 
+    // const [toolLabel, setToolLabel] = useState('');
     const [alarmTimeAway, setAlarmTimeAway] = useState('');
     const [alarmNotif, setAlarmNotif] = useState(false);
-
     const [todoToolsDropdown, setTodoToolsDropdown] = useState(false);
+    
+    //Drag and Drop functionality
+    const {attributes, listeners, setNodeRef, transform, transition} = useSortable({id})
+
+    const drag_n_drop_styles = {
+        transition,
+        transform:CSS.Translate.toString(transform)
+    }
 
     let activeAlarm = alarm && alarm.active === true;
 
-    //Removing alarmTimeAway on hover on todo tagname 
-    const remTimeAway = (e)=> {
-        const alarmtime_away = e.target.parentElement.nextSibling;
-        alarmtime_away.classList.add('hidetime_away');
-        e.currentTarget.parentElement.classList.remove('shrink');
-    }
+    //AlarmTimeAwayUI toggle on hover on todo tagname 
+    const timeAwayUI = (e, type)=> {
+        const parentElClasses = e.target.parentElement.classList;
+        const parentNextSibElClasses = e.target.parentElement.nextSibling.classList;
 
-    //adding alarmTimeAway back
-    const addTimeAway = (e)=> {
-        const alarmtime_away = e.target.parentElement.nextSibling;
-        const timeout = setTimeout(()=> {
-        alarmtime_away.classList.remove('hidetime_away');
-        return clearTimeout(timeout);
-        }, 2000)
-        e.currentTarget.parentElement.classList.remove('wraptext');
-        e.currentTarget.parentElement.classList.add('shrink');
+        if(type === "add") {
+            const timeout = setTimeout(()=> {
+                parentNextSibElClasses.remove('hidetime_away');
+                return clearTimeout(timeout);
+            }, 2000);
+
+            parentElClasses.remove('wraptext');
+            parentElClasses.add('shrink');
+            return;
+        }else {
+           parentNextSibElClasses.add('hidetime_away');
+           parentElClasses.remove('shrink');
+        }
     }
     
-    //setting alarmTimeAway
+    //Setting alarmTimeAway
     useEffect(()=> {
         const timeAwayInt = setInterval (()=> {
             if(activeAlarm === true) {
@@ -86,18 +99,21 @@ const todoEntry = ({todo}) => {
     useEffect(()=> {
         alarm.expired ? setAlarmNotif(true) : setAlarmNotif(false);
     }, [alarm, handleExpiredAlarm])
-
+        
     useEffect(()=> {
-        activeAlarm && setAlarmNotif(false);
+        if(activeAlarm) {
+            setAlarmNotif(false);
+        }
     }, [saveTodoAlarm, activeAlarm])
 
     //Notification toggling
-    const rmNotificatn = (e, id)=> {
+    const rmNotificatn = (e, id, index)=> {
+        console.log(e.target);
         if(alarmNotif) {
-            return handleExpiredAlarm(id);
+            return handleExpiredAlarm(id, index);
         }
         const alarmAway = e.currentTarget.parentElement;
-        alarmAway.style.opacity = '0';
+        alarmAway.style.opacity = '0';      
         alarmAway.style.pointerEvents = 'none';
         const alarmStyle = alarmAway.parentElement.style;
         if(!activeAlarm) {
@@ -126,58 +142,70 @@ const todoEntry = ({todo}) => {
         setTodoToolsDropdown(false);
     }
 
+    // console.log(activeTune);
+
   return (
-        <section key={id} className='todo_wrapper'>
+        <section key={id} className='todo_wrapper' ref={setNodeRef} style={drag_n_drop_styles}>
             <div className= 'todo_render'>
-                <article onMouseOver={()=>removeAlarmBox()} className= {`todo_tagname ${activeAlarm && 'shrink'}`}>
-                    <input 
-                    className ='todo_check' 
-                    type='checkbox' 
-                    id = {id} 
-                    checked= {complete} 
-                    onChange ={()=> {toggleCheck(id, index)}}
-                />
-                <label 
-                    className= {`todo_item ${complete && 'dim'} `} 
-                    onMouseOver={remTimeAway} 
-                    onMouseLeave={addTimeAway} 
-                    ref={(el) => (todoTagRef.current[index] = el)}
-                >
-                    {name}
-                </label>
-                </article>
-                <div 
-                    className='alarmtime_away' 
-                    onMouseOver={()=>removeAlarmBox()}
-                >
-                    <span className='notif_content'>
-                        <p className = {`notificatn_text ${alarmNotif && 'timeout'}`}> 
-                            {activeAlarm && alarmTimeAway}
-                            {alarmNotif && 'alarm timed out'}
-                        </p>
-                        <button 
-                            type ='button' 
-                            onClick={(e)=>rmNotificatn(e, id)} 
-                            className='rmAlarmNotificatnBtn'
+                <div className="todo_draggable" e>
+                    {/* todo tag */}
+                    <article {...attributes} {...listeners} onMouseOver={()=>removeAlarmBox()} className= {`todo_tagname ${activeAlarm && 'shrink'}`}>
+                        <input 
+                            className ='todo_check' 
+                            type='checkbox' 
+                            id = {id} 
+                            checked= {complete} 
+                            onChange ={()=> {toggleCheck(id, index)}}
+                        />
+                        <label 
+                            className= {`todo_item ${complete && 'dim'} `} 
+                            onMouseOver={(e)=> timeAwayUI(e, 'remove')} 
+                            onMouseLeave={(e)=> timeAwayUI(e, 'add')} 
+                            ref={(el) => (todoTagRef.current[index] = el)}
                         >
-                            {alarmNotRmv && <FaTimes/>}
-                        </button> 
-                    </span>
+                            {name}
+                        </label>
+                    </article>
+
+                    {/* Alarm time away */}
+                    <div 
+                        className='alarmtime_away' 
+                        onMouseOver={()=>removeAlarmBox()}
+                    >
+                        <span className='notif_content'>
+                            <p className = {`notificatn_text ${alarmNotif && 'timeout'}`}> 
+                                {activeAlarm && alarmTimeAway}
+                                {alarmNotif && "Time Up !!!"}
+                            </p>
+                            <button 
+                                type ='button' 
+                                onClick={(e)=> rmNotificatn(e, id, index)} 
+                                className='rmAlarmNotificatnBtn'
+                            >
+                                {alarmNotRmv && <FaTimes/>}
+                            </button> 
+                        </span>
+                    </div>
                 </div>
-                <div className="tools_extension">
+
+                {/* todo tools */}
+                <div className="todo_tools">
+                    {/* extend button */}
                     <button 
-                        className='dots_btn' 
+                        className='tools_extend-btn' 
                         onMouseOver={()=> setTodoToolsDropdown(true)} 
                         onMouseOut={()=> setTodoToolsDropdown(false)}
                     >
                         ...
                     </button>
 
+                    {/* todo tools btn */}
                     <div 
                         className={`todo_btns ${todoToolsDropdown && 'dropdown'}`} 
                         onMouseOver={todoBtnsHover} 
                         onMouseOut={()=> setTodoToolsDropdown(false)}
                     >
+                        {/* edit */}
                         {!complete && <button 
                             className={todoToolsDropdown ? 'tool_btn tool_btn-show' : "tool_btn"} 
                             onClick={()=>{editTodo(id)}}
@@ -185,6 +213,8 @@ const todoEntry = ({todo}) => {
                             <FaEdit className='edit'/>
                             <span className='tool_label'>edit</span>
                         </button>}
+
+                        {/* alarm */}
                         {!complete && <button 
                             className={todoToolsDropdown ? 'tool_btn tool_btn-show' : "tool_btn"} 
                             id = {id} 
@@ -193,6 +223,8 @@ const todoEntry = ({todo}) => {
                            <FaClock className= {`clock ${(activeAlarm) && 'active_alarm'} `}/>
                             <span className='tool_label'>alarm</span>
                         </button>}
+
+                        {/* todo order */}
                         {!complete && <button className={todoToolsDropdown ? 'tool_btn imp_range tool_btn-show' : "tool_btn imp_range"}>
                             <input  
                                 type='range' 
@@ -202,6 +234,8 @@ const todoEntry = ({todo}) => {
                             />
                             <span className='tool_label'>order</span>
                         </button>}
+
+                        {/* delete */}
                         <button 
                             className={todoToolsDropdown ? 'tool_btn tool_btn-show' : "tool_btn"} 
                             onClick={()=>{deleteTodo(id)}}
@@ -210,6 +244,8 @@ const todoEntry = ({todo}) => {
                             <span className='tool_label'>delete</span>
                         </button>
                     </div>
+
+                    {/* set alarm console */}
                     <div 
                         className="alarm_box" 
                         id={id}
@@ -224,7 +260,7 @@ const todoEntry = ({todo}) => {
                         </button>
                         <form 
                             className='alarm_form' 
-                            onSubmit={(e)=> saveTodoAlarm(e, id)}
+                            onSubmit={(e)=> saveTodoAlarm(e, id, index)}
                         >
                             {(activeAlarm) ? <label className='alarmactive_time'>
                                 {alarm && alarm.time}
@@ -243,11 +279,14 @@ const todoEntry = ({todo}) => {
                                 {activeAlarm ? 'cancel' : 'set'} 
                             </button>
                         </form>
+                        <audio ref={el => (alarmAudioRef.current[index] = el)} preload='none' loop={false} hidden>
+                            <source src={activeTune}/>
+                        </audio>
                     </div>
                 </div>  
 
             </div>
-            <hr className='line' onMouseOver={()=>removeAlarmBox()}></hr>
+            <hr className='line'style={{opacity: '0'}}  onMouseOver={()=>removeAlarmBox()}></hr>
         </section>
     );
 }

@@ -1,5 +1,5 @@
 import { Temporal } from "temporal-polyfill";
-import useTodoContext from "../useTodoContext";
+import {useTodoContext} from "../useTodoContext";
 
 const {
   styleColors,
@@ -32,11 +32,11 @@ const {
 
 const currTime = alarmTime; //Temporal.Now.plainTimeISO();
 
-const alarmTime = Temporal.PlainTime.from({
+const alarmTime_ = Temporal.PlainTime.from({
   hour: alarm.time.slice(0, 2),
   minute: alarm.time.slice(-2),
 }).toString(); //to set alarmTime
 
-const timeAway = currTime.until(alarmTime).round("minute").toString();
+const timeAway = currTime.until(alarmTime_).round("minute").toString();
 
 console.log(timeAway);
