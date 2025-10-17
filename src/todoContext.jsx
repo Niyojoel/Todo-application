@@ -46,7 +46,7 @@ export const TodoProvider = ({children}) => {
     // const [playTune, setPlayTune] = useState(false);
     const [activeTune, setActiveTune] = useState("");
     const [alarmTunes, setAlarmTunes] = useState([]);
-    const [newTune, setNewTune] = useState(["./piano.mp3", './pachelbel.mp3'])
+    const [newTune, setNewTune] = useState(["./piano.mp3", './father_advice.mp3', './real_love'])
     // const [newTune, setNewTune] = useState([])
     const alarmAudioRef = useRef([]);
 
