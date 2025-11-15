@@ -14,28 +14,34 @@
     --sorttype_hov: rgb(67, 67, 67);
     --sortsett_hov: rgb(129, 129, 129);
 
-    --normalFont: 1.2rem;
-    --regularFont: 1.03rem;
-    --inputFont: 0.94rem;
+    --normalFont: 1.1rem;
+    --regularFont: 0.945rem;
+    --inputFont: 0.87rem;
+    --tuneInput: 0.89rem;
+    --alarmInput: 0.85rem;
+    --toolLabel: 0.82rem;
+    --alarmClose: 0.8rem;
+    --notification: 0.7rem;
+    --h3: 1.5rem;
 }
 
 .container {
-    width: 80vw;
+    width: 80dvw;
     position: relative;
-    max-height: 90vh;
+    max-height: 90dvh;
     height: 90dvh;
-    border-radius: 5px;
+    border-radius: 3px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
-    overflow-y: auto;
+    overflow-y: clip;
     transition: var(--main-transition);
 }
 
 .settings_bcg {
     position: absolute;
-    top: 8.65%;
+    top: 9.9%;
     left: 0;
     right: 0;
     bottom: 0;
@@ -65,7 +71,7 @@
     width: 0;
     opacity: 0;
     background: var(--light_grey);
-    padding: 2rem 2rem 2rem 0;
+    padding: 2rem;
     padding-left: 10%;
     display: flex;
     flex-direction: column;
@@ -84,7 +90,7 @@
 
 .set_box-show {
     opacity: 1;
-    width: 85%;
+    width: 70%;
 }
 
 .btn-settings {
@@ -93,7 +99,7 @@
     border: 1px solid var(--themechangebtngrey);
     color: grey;
     font-weight: 500;
-    font-size: var(--inputFont);
+    font-size: var(--alarmInput);
     text-align: center;
     transition: all 300ms ease-in;
 }
@@ -121,6 +127,7 @@
     color: #595959;
     margin-bottom: -3px;
     font-weight: 600;
+    font-size: var(--inputFont);
 }
 
 .settings_content {
@@ -129,10 +136,12 @@
     gap: 1rem;
     width: max-content;
     margin-left: 1rem;
+    font-size: var(--alarmInput);
 }
 
 .theme {
     align-items: center;
+    place-items: center;
     flex-wrap: wrap;
     height: 2rem;
 }
@@ -285,7 +294,7 @@
     background: white;
     border: 1px solid grey;
     color: rgb(74, 74, 74);
-    font-size: 0.89rem;
+    font-size: var(--tuneInput);
     display: flex;
     align-items: center; 
     justify-content: start;
@@ -341,6 +350,7 @@
     gap: 1.2rem;
     overflow: hidden;
     padding-top: 3rem;
+    padding-bottom: 1rem;
 }
 
 .heading {
@@ -360,7 +370,7 @@
 }
 
 h3 {
-    font-size: 1.5rem;
+    font-size: var(--h3);
     font-weight: 600;
     text-align: center;
 }
@@ -650,7 +660,7 @@ h3 {
 .todo_list {
     width: var(--content-width);
     max-height: 800px;
-    min-height: 400px;
+    /* min-height: 400px; */
     background: var(--white);
     display: flex;
     flex-direction: column;
@@ -693,14 +703,15 @@ h3 {
 .todo_render {
     position: relative;
     width: 100%;
-    height: 2.9rem;
+    height: 2.7rem;
     padding-left: 10px;
-    margin-bottom: 2px;
+    /* margin-bottom: 2px; */
     display: flex;
     justify-content: space-between;
     align-items: center;
     transition: all 400ms ease-out;
-    background: rgba(0, 0, 0, 0.025);
+    /* background: rgba(0, 0, 0, 0.025); */
+    /* border-bottom: 1px solid black; */
     border-radius: 0.5%;
     gap: 1rem;
 }
@@ -854,7 +865,7 @@ h3 {
     padding-left: 5px;
     align-self: start;
     background: transparent;
-    font-size: 0.7rem;
+    font-size: var(--notification);
     color: rgb(203, 203, 203);
     border: transparent;
     outline: transparent;
@@ -930,7 +941,7 @@ h3 {
     color: rgb(163, 163, 163);
     border: none;
     outline: none;
-    font-size: 0.8rem;
+    font-size: var(--alarmClose);
     transition: all 300ms ease-in;
 }
 
@@ -952,7 +963,7 @@ h3 {
 .alarm_form input {
     background-color: transparent;
     font-family: inherit;
-    font-size: 0.85rem;
+    font-size: var(--alarmInput);
     border: none;
     outline: none;
     cursor: pointer;
@@ -961,6 +972,7 @@ h3 {
 }
 
 .alarmactive_time {
+    font-size: var(--alarmInput);
     margin: auto 0.8rem auto 1.3rem;
     color: green;
 }
@@ -1061,19 +1073,16 @@ input[type='range']::-webkit-slider-thumb:hover {
     border: transparent;
 }
 
-/* .tool_btn:hover .tool_label{
-    opacity: 1;
-} */
 
 .tool_label {
-    /* position: absolute; */
-    /* left: 0; */
     display: none;
     color: #595959;
-    font-size: 0.8rem;
+    font-size: var(--toolLabel);
+    font-weight: normal;
     width: 2.5rem;
     padding: 0;
     margin: 0;
+    margin-bottom: 3px;
     text-align: start;
     /* opacity: 0; */
 }
@@ -1144,7 +1153,7 @@ footer {
     outline: none;
     border: none;
     color: rgb(0, 0, 0);
-    font-size: 13px;
+    font-size: var(--alarmClose);
     font-weight: 400;
     letter-spacing: 1px;
     display: none;
@@ -1191,9 +1200,22 @@ footer {
 @media screen and (max-width: 650px) {
 
     :root {
-        --normalFont: 1.2rem;
-        --regularFont: 1.0rem;
-        --inputFont: 0.9rem;
+        --normalFont: 1rem;
+        --regularFont: 0.925rem;
+        --inputFont: 0.83rem;
+        --tuneInput: 0.85rem;
+        --alarmInput: 0.83rem;
+        --alarmClose: 0.7rem;
+        --notification: 0.6rem;
+        --h3: 1.2rem;
+    }
+
+    .container {
+        width: 100dvw;
+        max-height: 100dvh;
+        height: 100dvh;
+        border-radius: 0px;
+        overflow: hidden
     }
 
     .settings_bcg {
@@ -1206,7 +1228,7 @@ footer {
 
 
     h3 {
-        font-size: 1.25rem;
+        font-size: var(--h3);
     }
 
     .trash {
@@ -1227,8 +1249,8 @@ footer {
     }
 
     .note {
-        /* font-size: 1.05rem; */
-        margin-bottom: 0.2rem;
+        margin-top: 0.8rem;
+        margin-bottom: 0rem;
     }
 
     input[type='range']:hover {
@@ -1248,12 +1270,12 @@ footer {
     }
 
     .alarm_form input {
-        font-size: 0.8rem;
+        font-size: var(--alarmInput);
         width: 5.31rem;
     }
 
     .alarm_box .close_btn {
-        font-size: 0.7rem;
+        font-size: var(--notification);
     }
 
     .todo_pad {
@@ -1325,12 +1347,7 @@ footer {
 
     .add_btn {
         padding: 0 0.8rem;
-        font-size: 0.9rem;
-    }
-
-    .note {
-        margin-top: 0.8rem;
-        margin-bottom: 0.3rem;
+        font-size: var(--inputFont);
     }
 
     .search_input {

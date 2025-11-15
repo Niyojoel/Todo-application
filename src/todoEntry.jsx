@@ -108,7 +108,6 @@ const todoEntry = ({todo}) => {
 
     //Notification toggling
     const rmNotificatn = (e, id, index)=> {
-        console.log(e.target);
         if(alarmNotif) {
             return handleExpiredAlarm(id, index);
         }
@@ -141,8 +140,6 @@ const todoEntry = ({todo}) => {
         openAlarmBox(id);
         setTodoToolsDropdown(false);
     }
-
-    // console.log(activeTune);
 
   return (
         <section key={id} className='todo_wrapper' ref={setNodeRef} style={drag_n_drop_styles}>
@@ -280,13 +277,13 @@ const todoEntry = ({todo}) => {
                             </button>
                         </form>
                         <audio ref={el => (alarmAudioRef.current[index] = el)} preload='none' loop={false} hidden>
-                            <source src={activeTune}/>
+                            <source src={activeTune.file}/>
                         </audio>
                     </div>
                 </div>  
 
             </div>
-            <hr className='line'style={{opacity: '0'}}  onMouseOver={()=>removeAlarmBox()}></hr>
+            <hr className='line'  onMouseOver={()=>removeAlarmBox()}></hr>
         </section>
     );
 }

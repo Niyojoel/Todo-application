@@ -129,23 +129,23 @@ function Todoapp() {
                     
                     <ul className= {`sort_box ${sortBox && 'sorting_active'}`}
                     style={{borderTop: `1px solid ${styleColors.opacitycolor}`, border: `1px solid ${styleColors.opacitycolor}`}} onMouseOver={()=>sortBoxState('persist')} ref={sortUlRef}>
-                    {sortTypes.map((sort, index)=> {
+                    {sortTypes.map(({type, active}, index)=> {
                         return <li
                             key = {index}
                             className={sortBox ? 'sort_list show-sort_list' : 'sort_list'}
-                            style = {{borderLeft: sort === activeSortType ?
+                            style = {{borderLeft: active ?
                             `3px solid ${styleColors.midcolor}` : 'transparent'}}
                             >
                             <button
                                 type = 'button'
-                                onClick={(e)=> chooseSortType(e, sort)}
-                                className={`sort_type ${sort === activeSortType && 'curr_sortType'}`}
-                                style={{color: sort === activeSortType ? styleColors.sorttypehov : 'grey'}}
+                                onClick={(e)=> chooseSortType(e, type)}
+                                className={`sort_type ${active && 'curr_sortType'}`}
+                                style={{color: active ? styleColors.sorttypehov : 'grey'}}
                                 onMouseOver= {(e) => inputHover(e, "mouse-in")}
                                 onMouseOut= {sortBoxMouseOut}
                                 onMouseDown= {inputFocus}
                             >
-                                {sort}
+                                {type}
                         </button>
                         </li>
                     })}

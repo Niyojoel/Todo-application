@@ -6,6 +6,48 @@ const TodoContext = createContext(null);
 export const TodoProvider = ({children}) => {
     const isMounted = useRef(false);
 
+    const alarmSounds = [
+        {
+            id: 1,
+            file: "./father's_advice.mp3",
+            active: false,
+        },
+        {
+            id: 2,
+            file: "./piano.mp3",
+            active: false,
+        },
+        {
+            id: 3,
+            file: "./real_love.mp3",
+            active: false,
+        },
+
+    ]
+
+    const sortTypesArray = [
+        {
+            type : 'Time added',
+            active: true,
+        },
+        {
+            type :'Todo order',
+            active: false,
+        }, 
+        {
+            type: 'Alarm time',
+            active: false,
+        }, 
+        {
+            type: 'Alp order',
+            active: false,
+        },
+        {
+            type: 'Drag sort',
+            active: false,
+        }
+    ];
+
     // Theme colors
     const colorVar = 5;
     const [baseThemeColor, setBaseThemeColor] = useState('#e127de');
@@ -36,18 +78,18 @@ export const TodoProvider = ({children}) => {
     //sortings
     const [sortBox, setSortBox] = useState(false);
     const [activeSortType, setActiveSortType] = useState('')
-    const sortTypes = ['Time added', 'Todo order', 'Alarm time', 'Alp order','Drag sort'];
+    const [sortTypes, setSortTypes] = useState(sortTypesArray)
     const [sortPref, setSortPref] = useState([])
     const [savedSortPref, setSavedSortPref] = useState([])
     
+
     //Alarm reminder
     const [alarmTime, setAlarmTime] = useState('');
     const [alarmBoxOpen, setAlarmBoxOpen] = useState(false)
     // const [playTune, setPlayTune] = useState(false);
     const [activeTune, setActiveTune] = useState("");
-    const [alarmTunes, setAlarmTunes] = useState([]);
-    const [newTune, setNewTune] = useState(["./piano.mp3", './father_advice.mp3', './real_love'])
-    // const [newTune, setNewTune] = useState([])
+    const [alarmTunes, setAlarmTunes] = useState(alarmSounds);
+    const [newTune, setNewTune] = useState([])
     const alarmAudioRef = useRef([]);
 
 
@@ -221,6 +263,7 @@ export const TodoProvider = ({children}) => {
         }
     
         const changeRange=(e, id, i)=> {
+
             const tagNameStyle = todoTagRef.current[i].style;
             
             let range; 
@@ -253,7 +296,7 @@ export const TodoProvider = ({children}) => {
                 const todosEl= Array.from(consolesTodos);
 
                 const todoLabel = todosEl.map((el)=> {
-                return el.children[0].children[0].children[0].children[1];
+                return el.children[0].children[0].children[0].children[0].children[1];
                 })
 
                 todos.map((todo)=> {
@@ -265,6 +308,7 @@ export const TodoProvider = ({children}) => {
                     })
                 })
             }
+
             // return;
         }
     
@@ -345,8 +389,17 @@ export const TodoProvider = ({children}) => {
         } 
         
         const chooseSortType = (e, id)=> {
+
+            setSortTypes(sortTypes => {
+                return sortTypes.map(sort => {
+                    if(sort.type === id) {
+                        return {...sort, active: true}
+                    }
+                    return {...sort, active: false};
+                })
+            })
+
             const sortType = e.target.innerText;
-            setActiveSortType(sortType);
 
             const sortList = sortUlRef.current.children;
 
@@ -363,7 +416,6 @@ export const TodoProvider = ({children}) => {
         
             setSortBox(false);
             setTimeout(()=> {setTodoRender(sortTypeEffect(sortType))}, 1000);
-            return sortType;
         }
 
         const sortTypeEffect = (type, todos = [...todoRender])=> {
@@ -484,7 +536,7 @@ export const TodoProvider = ({children}) => {
     }
 
     function alarmTunesControl () {
-
+        // *** handle tune not functional
         const handleNewTune = (files) => {
             console.log(files);
             Array.from(files).map((file)=> {
@@ -500,6 +552,7 @@ export const TodoProvider = ({children}) => {
             // setNewTune(files_)
         }
 
+        // *** Upload tune not functional
         const uploadTune = () => {
             const existingTune = alarmTunes.find(tune => tune.name === newTune[0].name)
             if (existingTune === undefined) {
@@ -509,6 +562,7 @@ export const TodoProvider = ({children}) => {
             return;
         }
 
+        // *** Remove tune not functional
         const removeTune = (name) => {
             console.log(name);
             const tunes = [...alarmTunes]
@@ -517,7 +571,24 @@ export const TodoProvider = ({children}) => {
             setAlarmTunes(updatedTunes);
         }
 
-        return {handleNewTune, uploadTune, removeTune}
+        const changeActiveTune = (id) => {
+            if(activeTune.id !== id )
+            {
+                setAlarmTunes(tunes => {
+                    return tunes.map(tune => {
+                        if(tune.id === id) {
+                            return {...tune, active: true};
+                        } 
+                        return {...tune, active: false};
+                    })
+                })
+                alarmAudioRef.current.forEach(ref => ref.children.reload());
+                console.log(alarmAudioRef);
+            }
+            return;
+        }
+
+        return {handleNewTune, uploadTune, removeTune, changeActiveTune}
     }
 
     const {addTodo, alertControl, todoOrderStyles} = todoToolsControls()
@@ -593,41 +664,51 @@ export const TodoProvider = ({children}) => {
             setBaseThemeColor(storedTodo.baseThemeColor)
             setColors(new Values(storedTodo.baseThemeColor).all(colorVar))
             setTodoList(storedTodo.todoList);
-            setActiveSortType(storedTodo.activeSortType ? storedTodo.activeSortType : 'Time added');  
+            setSortTypes(storedTodo.sortTypes)
             setSortPref(storedTodo.userSortPreference);
-            sortTypeEffect(storedTodo.activeSortType, storedTodo.todoList); 
-            todoOrderStyles(storedTodo.todoList);        
-            setAlarmTunes([...storedTodo.tunes])
-            setActiveTune(storedTodo.activeTune)
+            setAlarmTunes(storedTodo.tunes)
         };
     }, [])
 
+    
     useEffect (()=> {
-        console.log(sortPref);
         setSavedSortPref(sortPref)
     }, [sortPref])
+
+    //SortType changes effect and active sort type change
+    useEffect (()=> {
+        setActiveSortType(sortTypes?.find(sort => sort.active)?.type);
+        sortTypeEffect(sortTypes?.find(sort => sort.active)?.type, todoList); 
+    }, [sortTypes])
+
+    //Setting Alarm active tune
+    useEffect (()=> {
+        setActiveTune(alarmTunes?.find(tune => tune.active));
+    }, [alarmTunes])
     
     //Saving to local storage
     useEffect (()=> {
         const todosInfo = {
             todoList: todoList, 
-            activeSortType: activeSortType,
+            sortTypes: sortTypes,
             userSortPreference: savedSortPref, 
             baseThemeColor: baseThemeColor, 
             tunes: alarmTunes,
-            activeTune: activeTune
         }
         isMounted.current ? localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todosInfo)): isMounted.current = true;
-        setTodoRender(todosInfo.todoList);        
-    }, [todoList, activeSortType, sortPref, baseThemeColor, alarmTunes, activeTune])
+    }, [todoList, sortTypes, sortPref, baseThemeColor, alarmTunes])
+
+    //Synching TodoRender with TodoList on change
+    useEffect (()=> {
+        setTodoRender(todoList);
+    }, [todoList])
     
-    //Style and order effect
+    //Styles and order effect on TodoRender change
     useEffect (()=> {
         const effectTimeout = setTimeout(() => {
             todoOrderStyles(todoRender);
-            sortTypeEffect(activeSortType, todoRender);
             cssComplimentaryStyles();
-        }, 2000);
+        }, 1000);
 
         return ()=> clearInterval(effectTimeout);
     }, [todoRender])
@@ -641,7 +722,7 @@ export const TodoProvider = ({children}) => {
         return ()=> clearInterval(alertTimer);
     },[todoList, addTodo])
 
-    return <TodoContext.Provider value={{colors, date, time, alarmTime, setColors, baseThemeColor, setBaseThemeColor, styleColors, colorVar, todoList, sortTypes, activeSortType, sortBox, setSortBox, effectChange, setEffectChange,openSettings, setOpenSettings, settingsBtn, todoRender, inputRef, todosConsoleRef, alert, editing, footerBtns, searchFound, todoToolsControls, sortTodoControls, todoAlarmControls, themeHandler, inputThemeStyles, todoTagRef, sortUlRef, alarmConsolesRef, alarmTunes, setAlarmTunes, newTune, setNewTune, alarmTunesControl, alarmAudioRef, setActiveTune, activeTune}}>
+    return <TodoContext.Provider value={{colors, date, time, alarmTime, setColors, baseThemeColor, setBaseThemeColor, styleColors, colorVar, todoList, sortTypes, activeSortType, sortBox, setSortBox, effectChange, setEffectChange,openSettings, setOpenSettings, settingsBtn, todoRender, inputRef, todosConsoleRef, alert, editing, footerBtns, searchFound, todoToolsControls, sortTodoControls, todoAlarmControls, themeHandler, inputThemeStyles, todoTagRef, sortUlRef, alarmConsolesRef, alarmTunes, setAlarmTunes, newTune, alarmTunesControl, alarmAudioRef, setActiveTune, activeTune}}>
         {children}
     </TodoContext.Provider>
 }
