@@ -14,29 +14,78 @@
     --sorttype_hov: rgb(67, 67, 67);
     --sortsett_hov: rgb(129, 129, 129);
 
+    /*font sizing variables*/
     --normalFont: 1.1rem;
     --regularFont: 0.945rem;
     --inputFont: 0.87rem;
-    --tuneInput: 0.89rem;
+    --search_not_found_Font: 0.94rem;
+    --tuneInput: 0.92rem;
     --alarmInput: 0.85rem;
     --toolLabel: 0.82rem;
     --alarmClose: 0.8rem;
     --notification: 0.7rem;
     --h3: 1.5rem;
+
+    /*input width size*/
+    --inputWidth: 10rem;
+    --inputHeight: 2.2rem;
+    --time_date_bottom_gap: 10px;
 }
 
 .container {
     width: 80dvw;
     position: relative;
-    max-height: 90dvh;
-    height: 90dvh;
+    max-height: 95dvh;
+    height: 95dvh;
     border-radius: 3px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: var(--time_date_bottom_gap);
     overflow-y: clip;
     transition: var(--main-transition);
+}
+
+.heading {
+    width: 100%;
+    padding: 1rem 5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header_content {
+    width: var(--content-width);
+    color: var(--white);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+h3 {
+    font-size: var(--h3);
+    font-weight: 600;
+    text-align: center;
+}
+
+
+/*Settings styles*/
+.settings_btn {
+    width: 1.2rem;
+    height: 1.2rem;
+    padding: 0;
+    color: var(--white);
+    background-color: transparent;
+    font-size: var(--normalFont);
+    border: none;
+    outline: none;
+    transition: var(--main-transition);
+}
+
+.settings_active {
+    border: none;
+    outline: none;
+    transform: scale(1.2);
 }
 
 .settings_bcg {
@@ -78,6 +127,12 @@
     gap: 2rem;
     z-index: 5;
     transition: all 200ms ease-in;
+}
+
+.settings_box:hover,
+.settings_btn:focus {
+    border: none;
+    outline: none;
 }
 
 .settings_div {
@@ -139,6 +194,7 @@
     font-size: var(--alarmInput);
 }
 
+    /*Theme settings styles*/
 .theme {
     align-items: center;
     place-items: center;
@@ -149,7 +205,6 @@
 .theme label {
     cursor: pointer;
 }
-
 
 .theme label:hover {
     color: #000000;
@@ -195,9 +250,7 @@
     cursor: pointer;
 }
 
-/* -- */
-
-/* - */
+    /* Alarm tunes settings */
 .tunes_head {
     text-align: start;
 }
@@ -210,7 +263,6 @@
     overflow: hidden;
 }
 
-/* - */
 .tune {
     display: flex;
     flex-wrap: nowrap;
@@ -262,7 +314,6 @@
     outline: transparent;
 }
 
-/* - */
 .upload_tunes {
     width: 100%;
     display: flex;
@@ -322,7 +373,7 @@
     z-index: 3;
 }
 
-/* -- */
+/* time, date, other content_box styling */
 
 .time_date {
     width: 80%;
@@ -353,52 +404,8 @@
     padding-bottom: 1rem;
 }
 
-.heading {
-    width: 100%;
-    padding: 1rem 5%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
 
-.header_content {
-    width: var(--content-width);
-    color: var(--white);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-h3 {
-    font-size: var(--h3);
-    font-weight: 600;
-    text-align: center;
-}
-
-.settings_btn {
-    width: 1.2rem;
-    height: 1.2rem;
-    padding: 0;
-    color: var(--white);
-    background-color: transparent;
-    font-size: var(--normalFont);
-    border: none;
-    outline: none;
-    transition: var(--main-transition);
-}
-
-.settings_active {
-    border: none;
-    outline: none;
-    transform: scale(1.2);
-}
-
-.settings_box:hover,
-.settings_btn:focus {
-    border: none;
-    outline: none;
-}
-
+/*Todo adding and searching styles*/
 .note {
     text-align: center;
     margin-top: 1rem;
@@ -447,7 +454,7 @@ h3 {
 
 .todo_adding {
     width: fit-content;
-    height: 2.2rem;
+    height: var(--inputHeight);
     display: flex;
 }
 
@@ -457,7 +464,7 @@ h3 {
 
 .add_input,
 .search_input {
-    width: 10rem;
+    width: var(--inputWidth);
     height: inherit;
     padding: 0 1rem;
     border: transparent;
@@ -475,7 +482,7 @@ h3 {
 .input_box {
     position: relative;
     width: 0;
-    height: 2.2rem;
+    height: var(--inputHeight);
     display: flex;
     justify-content: end;
     background-color: transparent;
@@ -489,13 +496,13 @@ h3 {
 }
 
 .input_active {
-    width: 10rem;
+    width: var(--inputWidth);
     opacity: 1;
     overflow: visible;
 }
 
 .search_input {
-    width: 8rem;
+    width: calc(var(--inputWidth) - 2rem);
     opacity: 1;
 }
 
@@ -538,11 +545,11 @@ h3 {
 .add_btn {
     width: fit-content;
     height: inherit;
-    padding: 0 1rem;
+    padding: 0 5.5%;
+    font-size: var(--inputFont);
     border-radius: 0 6px 6px 0;
     outline: none;
     border: none;
-    font-size: var(--regularFont);
     text-wrap: nowrap;
     transition: var(--main-transition);
 }
@@ -556,6 +563,8 @@ h3 {
     border: none;
 }
 
+
+/*Sorting Functionality*/
 .sortings {
     width: var(--content-width);
     text-align: end;
@@ -568,7 +577,7 @@ h3 {
 
 .sortings span {
     flex: 1;
-    font-size: var(--regularFont);
+    font-size: var(--tuneInput);
 }
 
 .sort_type {
@@ -583,7 +592,7 @@ h3 {
     align-items: center;
     text-align: end;
     text-wrap: nowrap;
-    font-size: var(--regularFont);
+    font-size: var(--tuneInput);
     gap: 0.5rem;
     border: none;
     outline: none;
@@ -608,8 +617,10 @@ h3 {
     top: -60%;
     right: 0;
     background: var(--white);
+    overflow: hidden;
     padding: 0;
     list-style-type: none;
+    border: 1px solid rgba(0, 0, 0, 0.2);
     z-index: 0;
     visibility: hidden;
     opacity: 0;
@@ -628,6 +639,7 @@ h3 {
 .sort_list {
     padding: 0.3rem 0;
     margin: 0;
+    overflow: hidden;
     text-align: left;
     visibility: hidden;
     opacity: 0;
@@ -641,7 +653,7 @@ h3 {
 
 .sort_list .sort_type {
     padding: 0 0.5rem;
-    font-size: var(--inputFont);
+    font-size: var(--tuneInput);
     transition: var(--main-transition);
 }
 
@@ -649,18 +661,16 @@ h3 {
     color: var(--sorttype_hov);
 }
 
-.sort_list:last-child {
-    border-bottom: none;
-}
-
 .curr_sortType {
     color: var(--sorttype_hov);
 }
 
+
+/*Todo entry console styles*/
 .todo_list {
     width: var(--content-width);
-    max-height: 800px;
-    /* min-height: 400px; */
+    max-height: 350px;
+    min-height: 280px;
     background: var(--white);
     display: flex;
     flex-direction: column;
@@ -682,17 +692,18 @@ h3 {
     border-radius: 5px;
 }
 
-/* make the last of todo_render line opacity 0 */
-
 .todo_pad {
     padding: 0.8rem;
 }
 
-.search_not-found {
+.search_not-found{
     width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
-    margin-top: 5rem;
+    align-items: center;
+    font-size: var(--search_not_found_Font);
+    font-weight: 400;
 }
 
 .show {
@@ -700,6 +711,7 @@ h3 {
     opacity: 1;
 }
 
+    /*todo styles*/
 .todo_render {
     position: relative;
     width: 100%;
@@ -711,19 +723,19 @@ h3 {
     align-items: center;
     transition: all 400ms ease-out;
     /* background: rgba(0, 0, 0, 0.025); */
-    /* border-bottom: 1px solid black; */
+    /* border-bottom: 1px solid rgba(0, 0, 0, 0.2); */
     border-radius: 0.5%;
     gap: 1rem;
-}
-
-.line {
-    opacity: 0.3;
 }
 
 .todo_render:hover {
     background: linear-gradient(to left, #f9f9f9, rgb(214, 214, 214));
     padding-left: 0.3rem;
     border-left: 1px solid rgb(173, 173, 173);
+}
+
+.line {
+    opacity: 0.6;
 }
 
 .todo_draggable {
@@ -754,16 +766,25 @@ h3 {
     background-color: white;
     border: 1px solid black;
     /* outline: 1px solid black; */
-    align-self: center;
 }
 
 .todo_item {
+    flex: 1;
     overflow: hidden;
     color: rgb(0, 0, 0);
     text-overflow: ellipsis;
     white-space: none;
+    text-align: start;
+}
+
+.todo_label {
+    /* align-self: center; */
+    text-align: center;
+    margin-bottom: 3px;
     transition: all 300ms ease-out;
 }
+
+        /*todo tools styles*/
 
 .todo_tools {
     position: absolute;
@@ -772,9 +793,8 @@ h3 {
     flex-direction: column;
     align-items: end;
     justify-content: center;
-    top: 0.5rem;
     right: 0;
-    padding-right: 0.25rem;
+    /* padding-right: 0.25rem; */
 }
 
 .tools_extend-btn {
@@ -804,103 +824,10 @@ h3 {
     outline: none;
 }
 
-
-.todo_tagname:hover .alarmtime_away {
-    opacity: 0;
-}
-
-.shrink {
-    width: 30%;
-}
-
-.wraptext {
-    text-wrap: wrap;
-}
-
-.dim {
-    color: rgb(182, 182, 182);
-    text-decoration: line-through;
-    font-weight: 500;
-}
-
-.alarmtime_away {
-    position: absolute;
-    left: 50%;
-    /* left: 40%; */
-    top: 0;
-    bottom: 0;
-    padding: 0 0.5rem;
-    width: 14%;
-    display: block;
-    place-content: center;
-    overflow: hidden;
-    text-wrap: nowrap;
-    text-overflow: ellipsis;
-    color: rgb(190, 190, 190);
-    opacity: 1;
-    pointer-events: all;
-    transition: var(--main-transition);
-    z-index: 3;
-}
-
-
-.notificatn_text {
-    font-size: var(--inputFont);
-    flex: 1;
-    font-weight: 400;
-    color: rgb(190, 190, 190);
-    display: inline;
-    cursor: text;
-}
-
-.notificatn_text.timeout {
-    color: red;
-}
-
-.rmAlarmNotificatnBtn {
-    position: relative;
-    top: -10px;
-    right: -3px;
-    padding: 0;
-    padding-left: 5px;
-    align-self: start;
-    background: transparent;
-    font-size: var(--notification);
-    color: rgb(203, 203, 203);
-    border: transparent;
-    outline: transparent;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-.rmAlarmNotificatnBtn:focus,
-.rmAlarmNotificatnBtn:hover {
-    color: #b2b2b2;
-    transform: scale(1.1);
-    border: transparent;
-    outline: transparent;
-
-}
-
-.alarmtime_away:hover {
-    width: fit-content;
-}
-
-.alarmtime_away:hover .rmAlarmNotificatnBtn {
-    visibility: visible;
-    pointer-events: all;
-}
-
-.hidetime_away {
-    width: 0;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.todo_btns {
+.tools_btns {
     position: relative;
     width: fit-content;
-    min-width: 6rem;
+    min-width: fit-content;
     height: 100%;
     /* padding: 0 0.3rem; */
     display: flex;
@@ -909,6 +836,131 @@ h3 {
     transition: all 500ms ease-out;
 }
 
+.todo_render:hover .tools_btns {
+    opacity: 1;
+}
+
+.tool_btn {
+    width: 2rem;
+    height: 2.2rem;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem 0.4rem;
+    z-index: 2;
+}
+
+.tool_btn p {
+    text-align: center;
+}
+
+.tool_btn:hover,
+.tool_btn:focus {
+    background: none;
+    outline: none;
+    border: transparent;
+}
+
+.tool_label {
+    display: none;
+    color: #595959;
+    font-size: var(--toolLabel);
+    font-weight: normal;
+    width: 2.5rem;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 3px;
+    text-align: start;
+    /* opacity: 0; */
+}
+
+.show_label {
+    opacity: 1;
+}
+
+.tool_icon {
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.trash,
+.edit,
+.clock {
+    color: var(--dim_name);
+    transition: var(--main-transition);
+    z-index: 1;
+}
+
+.trash {
+    width: 11px;
+}
+
+.clock {
+    width: 13px;
+}
+
+.edit {
+    width: 14px;
+}
+
+.tools_btns .todo_btn:hover .trash,
+.tools_btns .todo_btn:hover .edit,
+.trash:hover,
+.trash:focus,
+.clock:focus,
+.clock:hover,
+.edit:hover,
+.edit:focus {
+    fill: var(--grey);
+}
+
+.active_alarm {
+    color: green;
+}
+
+            /*range/order tool style*/
+input[type='range'] {
+    width: 2.1rem;
+    height: 0.23rem;
+    -webkit-appearance: none;
+    background: rgb(209, 209, 209);
+    margin-bottom: 2px;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    transition: var(--main-transition);
+}
+
+input[type='range']:hover {
+    width: 2.1rem;
+    height: 0.23rem;
+    accent-color: var(--grey);
+    background: rgb(179, 179, 179);
+}
+
+input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 0.8rem;
+    height: 0.8rem;
+    background: var(--dim_name);
+    border-radius: 50%;
+    transition: var(--main-transition);
+}
+
+input[type='range']::-webkit-slider-thumb:hover {
+    background: var(--grey);
+}
+
+.imp_range {
+    margin-top: 2px;
+    width: 3rem !important;
+}
+
+            /*alarm tool styles*/
 .alarm_box {
     position: absolute;
     right: 0;
@@ -1009,123 +1061,99 @@ h3 {
     outline: none;
 }
 
-input[type='range'] {
-    width: 2.1rem;
-    height: 0.23rem;
-    -webkit-appearance: none;
-    background: rgb(209, 209, 209);
-    margin-bottom: 2px;
-    border-radius: 5px;
-    outline: none;
-    border: none;
-    cursor: pointer;
-    transition: var(--main-transition);
+        /*Alarm notifications*/
+.todo_tagname:hover .alarmtime_away {
+    opacity: 0;
 }
 
-input[type='range']:hover {
-    width: 2.1rem;
-    height: 0.23rem;
-    accent-color: var(--grey);
-    background: rgb(179, 179, 179);
+.shrink {
+    width: 30%;
 }
 
-input[type='range']::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 0.8rem;
-    height: 0.8rem;
-    background: var(--dim_name);
-    border-radius: 50%;
-    transition: var(--main-transition);
+.wraptext {
+    text-wrap: wrap;
 }
 
-input[type='range']::-webkit-slider-thumb:hover {
-    background: var(--grey);
+.dim {
+    color: rgb(182, 182, 182);
+    text-decoration: line-through;
+    font-weight: 500;
 }
 
-.todo_render:hover .todo_btns {
+.alarmtime_away {
+    position: absolute;
+    left: 50%;
+    /* left: 40%; */
+    top: 0;
+    bottom: 0;
+    padding: 0 0.5rem;
+    width: 14%;
+    display: block;
+    place-content: center;
+    overflow: hidden;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+    color: rgb(190, 190, 190);
     opacity: 1;
+    pointer-events: all;
+    transition: var(--main-transition);
+    z-index: 3;
 }
 
-.tool_btn {
-    width: 2rem;
-    height: 2.2rem;
-    background: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.3rem 0.4rem;
-    z-index: 2;
+.notificatn_text {
+    font-size: var(--inputFont);
+    flex: 1;
+    font-weight: 400;
+    color: rgb(190, 190, 190);
+    display: inline;
+    cursor: text;
 }
 
-.imp_range {
-    margin-top: 2px;
-    width: 3rem !important;
+.notificatn_text.timeout {
+    color: red;
 }
 
-.tool_btn p {
-    text-align: center;
-}
-
-.tool_btn:hover,
-.tool_btn:focus {
-    background: none;
-    outline: none;
-    border: transparent;
-}
-
-
-.tool_label {
-    display: none;
-    color: #595959;
-    font-size: var(--toolLabel);
-    font-weight: normal;
-    width: 2.5rem;
+.rmAlarmNotificatnBtn {
+    position: relative;
+    top: -10px;
+    right: -3px;
     padding: 0;
-    margin: 0;
-    margin-bottom: 3px;
-    text-align: start;
-    /* opacity: 0; */
+    padding-left: 5px;
+    align-self: start;
+    background: transparent;
+    font-size: var(--notification);
+    color: rgb(203, 203, 203);
+    border: transparent;
+    outline: transparent;
+    visibility: hidden;
+    pointer-events: none;
 }
 
-.show_label {
-    opacity: 1;
+.rmAlarmNotificatnBtn:focus,
+.rmAlarmNotificatnBtn:hover {
+    color: #b2b2b2;
+    transform: scale(1.1);
+    border: transparent;
+    outline: transparent;
+
 }
 
-.trash,
-.edit,
-.clock {
-    color: var(--dim_name);
-    transition: var(--main-transition);
-    z-index: 1;
+.alarmtime_away:hover {
+    width: fit-content;
 }
 
-.trash {
-    width: 12px;
+.alarmtime_away:hover .rmAlarmNotificatnBtn {
+    visibility: visible;
+    pointer-events: all;
 }
 
-.clock {
-    width: 14px;
+.hidetime_away {
+    width: 0;
+    opacity: 0;
+    pointer-events: none;
 }
 
-.edit {
-    width: 15px;
-}
-
-.active_alarm {
-    color: green;
-}
-
-.todo_btns .todo_btn:hover .trash,
-.todo_btns .todo_btn:hover .edit,
-.trash:hover,
-.trash:focus,
-.clock:focus,
-.clock:hover,
-.edit:hover,
-.edit:focus {
-    fill: var(--grey);
-}
-
+/*footer styles*/
 footer {
     width: 100%;
     display: flex;
@@ -1170,7 +1198,6 @@ footer {
 }
 
 
-
 @media screen and (min-width:1000px) {
     :root {
         --content-width: 80%;
@@ -1202,12 +1229,17 @@ footer {
     :root {
         --normalFont: 1rem;
         --regularFont: 0.925rem;
+        --search_not_found_Font: 0.86rem;
         --inputFont: 0.83rem;
         --tuneInput: 0.85rem;
         --alarmInput: 0.83rem;
         --alarmClose: 0.7rem;
         --notification: 0.6rem;
         --h3: 1.2rem;
+
+        --inputWidth: 8rem;
+        --inputHeight: 2.1rem;  
+        --time_date_bottom_gap: 5%;
     }
 
     .container {
@@ -1225,102 +1257,76 @@ footer {
     .settings_box {
         width: 100%;
     }
-
-
-    h3 {
-        font-size: var(--h3);
-    }
-
-    .trash {
-        width: 10px;
-    }
-
-    .clock {
-        width: 12px;
-    }
-
-    .edit {
-        width: 13px;
-    }
-
-    input[type='range']::-webkit-slider-thumb {
-        width: 0.7rem;
-        height: 0.7rem;
-    }
-
+    
     .note {
         margin-top: 0.8rem;
         margin-bottom: 0rem;
     }
 
-    input[type='range']:hover {
-        width: 2.1rem;
-        height: 0.23rem;
-        accent-color: var(--grey);
-        background: rgb(179, 179, 179);
+    .search_input {
+        width: 6.5rem;
     }
 
-    .alarm_box {
-        /* height: max-content; */
-        padding: 0.3rem;
+    .input_box {
+        width: 1.8rem;
+        overflow: hidden;
+        background: transparent;
     }
 
-    .alarm_form {
-        gap: 0.5rem;
-    }
-
-    .alarm_form input {
-        font-size: var(--alarmInput);
-        width: 5.31rem;
-    }
-
-    .alarm_box .close_btn {
-        font-size: var(--notification);
+    .input_box-extend {
+        width: 8.5rem;
+        background: transparent;
     }
 
     .todo_pad {
         padding-bottom: 2rem;
     }
 
-    .tool_btn {
-        width: 100%;
-        height: 1.9rem;
-        justify-content: space-between;
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-        transition: all 300ms ease-in;
-    }
-
-    .imp_range {
-        width: 100% !important;
-    }
-
-    .todo_btns .tool_btn:hover {
-        background: #f8f8f8;
-    }
-
-    .todo_btns {
-        position: absolute;
-        top: 50%;
-        width: max-content;
-        height: max-content;
-        flex-direction: column;
-        background: linear-gradient(#ededed, #e2e2e2);
-        opacity: 0;
-        padding: 0.2rem;
-        z-index: 2;
-        visibility: hidden;
-        pointer-events: none;
-        transition: all 300ms ease-in;
+    /*todo_tools styles*/
+    .todo_tools {
+        top: 13%;
     }
 
     .todo_render:hover .todo_tools {
         opacity: 1;
     }
 
+    .tools_btns {
+        position: absolute;
+        top: 60%;
+        width: max-content;
+        height: fit-content;
+        flex-direction: column;
+        background: linear-gradient(#ededed, #e2e2e2);
+        opacity: 0;
+        /* padding: 0.2rem 0; */
+        z-index: 2;
+        visibility: hidden;
+        pointer-events: none;
+        transition: all 300ms ease-in;
+    }
+
     .tools_extend-btn {
         display: flex;
+    }
+
+    .tool_btn {
+        width: 100%;
+        height: 1.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 0.5rem;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: all 300ms ease-in;
+        border-radius: 1px !important;
+        /* border-bottom: 1px solid rgba(0, 0, 0, 0.2); */
+    }
+
+    .tools_btns .tool_btn:hover {
+        background: #f5f4f4;
     }
 
     .tool_btn-show {
@@ -1341,27 +1347,54 @@ footer {
         visibility: visible;
     }
 
-    .add_input {
-        width: 8rem;
+    .tool_icon {
+        width: 2rem;
     }
 
-    .add_btn {
-        padding: 0 0.8rem;
-        font-size: var(--inputFont);
+    .imp_range {
+        margin-top: 0px;
+        width: 100% !important;
     }
 
-    .search_input {
-        width: 6.5rem;
+    .trash {
+        width: 10px;
     }
 
-    .input_box {
-        width: 1.9rem;
-        overflow: hidden;
-        background: transparent;
+    .clock {
+        width: 12px;
     }
 
-    .input_box-extend {
-        width: 8.5rem;
-        background: transparent;
+    .edit {
+        width: 13px;
+    }
+
+    input[type='range']::-webkit-slider-thumb {
+        width: 0.7rem;
+        height: 0.7rem;
+    }
+
+    input[type='range']:hover {
+        width: 2.1rem;
+        height: 0.23rem;
+        accent-color: var(--grey);
+        background: rgb(179, 179, 179);
+    }
+
+    /*alarm tool styles*/
+    .alarm_box {
+        padding: 0.3rem;
+    }
+
+    .alarm_form {
+        gap: 0.5rem;
+    }
+
+    .alarm_form input {
+        font-size: var(--alarmInput);
+        width: 5.31rem;
+    }
+
+    .alarm_box .close_btn {
+        font-size: var(--notification);
     }
 }

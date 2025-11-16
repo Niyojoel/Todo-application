@@ -53,8 +53,8 @@ const todoEntry = ({todo}) => {
 
     //AlarmTimeAwayUI toggle on hover on todo tagname 
     const timeAwayUI = (e, type)=> {
-        const parentElClasses = e.target.parentElement.classList;
-        const parentNextSibElClasses = e.target.parentElement.nextSibling.classList;
+        const parentElClasses = e.target.parentElement.parentElement.classList;
+        const parentNextSibElClasses = e.target.parentElement.parentElement.nextSibling.classList;
 
         if(type === "add") {
             const timeout = setTimeout(()=> {
@@ -143,10 +143,10 @@ const todoEntry = ({todo}) => {
 
   return (
         <section key={id} className='todo_wrapper' ref={setNodeRef} style={drag_n_drop_styles}>
-            <div className= 'todo_render'>
-                <div className="todo_draggable" e>
+            <div className= 'todo_render' >
+                <div className="todo_draggable">
                     {/* todo tag */}
-                    <article {...attributes} {...listeners} onMouseOver={()=>removeAlarmBox()} className= {`todo_tagname ${activeAlarm && 'shrink'}`}>
+                    <article onMouseOver={()=>removeAlarmBox()} className= {`todo_tagname ${activeAlarm && 'shrink'}`}>
                         <input 
                             className ='todo_check' 
                             type='checkbox' 
@@ -154,14 +154,16 @@ const todoEntry = ({todo}) => {
                             checked= {complete} 
                             onChange ={()=> {toggleCheck(id, index)}}
                         />
+                        <div className="todo_item" {...listeners} {...attributes}>
                         <label 
-                            className= {`todo_item ${complete && 'dim'} `} 
+                            className= {`todo_label ${complete && 'dim'} `} 
                             onMouseOver={(e)=> timeAwayUI(e, 'remove')} 
                             onMouseLeave={(e)=> timeAwayUI(e, 'add')} 
                             ref={(el) => (todoTagRef.current[index] = el)}
                         >
                             {name}
                         </label>
+                        </div>
                     </article>
 
                     {/* Alarm time away */}
@@ -198,7 +200,7 @@ const todoEntry = ({todo}) => {
 
                     {/* todo tools btn */}
                     <div 
-                        className={`todo_btns ${todoToolsDropdown && 'dropdown'}`} 
+                        className={`tools_btns ${todoToolsDropdown && 'dropdown'}`} 
                         onMouseOver={todoBtnsHover} 
                         onMouseOut={()=> setTodoToolsDropdown(false)}
                     >
@@ -207,7 +209,9 @@ const todoEntry = ({todo}) => {
                             className={todoToolsDropdown ? 'tool_btn tool_btn-show' : "tool_btn"} 
                             onClick={()=>{editTodo(id)}}
                         >
-                            <FaEdit className='edit'/>
+                            <span className='tool_icon'>
+                                <FaEdit className='edit'/>
+                            </span>
                             <span className='tool_label'>edit</span>
                         </button>}
 
@@ -217,18 +221,17 @@ const todoEntry = ({todo}) => {
                             id = {id} 
                             onClick={()=>openAlarmConsole(id)}
                         >
-                           <FaClock className= {`clock ${(activeAlarm) && 'active_alarm'} `}/>
+                            <span className='tool_icon'>
+                                <FaClock className= {`clock ${(activeAlarm) && 'active_alarm'} `}/>
+                            </span>
                             <span className='tool_label'>alarm</span>
                         </button>}
 
                         {/* todo order */}
                         {!complete && <button className={todoToolsDropdown ? 'tool_btn imp_range tool_btn-show' : "tool_btn imp_range"}>
-                            <input  
-                                type='range' 
-                                value={order} 
-                                className= 'order_range' 
-                                onChange={(e)=>changeRange(e, id, index)}
-                            />
+                            <span className='tool_icon'>
+                                <input type='range' value={order} onChange={(e)=>changeRange(e, id, index)}/>
+                            </span>
                             <span className='tool_label'>order</span>
                         </button>}
 
@@ -237,7 +240,9 @@ const todoEntry = ({todo}) => {
                             className={todoToolsDropdown ? 'tool_btn tool_btn-show' : "tool_btn"} 
                             onClick={()=>{deleteTodo(id)}}
                         >
-                           <FaTrash className='trash'/>
+                            <span className='tool_icon'>
+                                <FaTrash className='trash'/>
+                            </span>
                             <span className='tool_label'>delete</span>
                         </button>
                     </div>
@@ -277,7 +282,7 @@ const todoEntry = ({todo}) => {
                             </button>
                         </form>
                         <audio ref={el => (alarmAudioRef.current[index] = el)} preload='none' loop={false} hidden>
-                            <source src={activeTune.file}/>
+                            <source src={activeTune?.file}/>
                         </audio>
                     </div>
                 </div>  

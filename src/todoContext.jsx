@@ -66,28 +66,28 @@ export const TodoProvider = ({children}) => {
     const [date, setDate] = useState(TodaysDate)
     const [time, setTime] = useState('');
     const [openSettings, setOpenSettings] = useState(false);
+    const [searchFound, setSearchFound] = useState(null);
     const settingsBtn = useRef(null);
     const inputRef = useRef(null);
     const sortUlRef = useRef(null);
     const todoTagRef = useRef([]);
     const alarmConsolesRef = useRef([]);
     const todosConsoleRef = useRef(null);
-    const [searchFound, setSearchFound] = useState('');
     const [footerBtns, setFooterBtns] = useState(true);
     
     //sortings
     const [sortBox, setSortBox] = useState(false);
     const [activeSortType, setActiveSortType] = useState('')
     const [sortTypes, setSortTypes] = useState(sortTypesArray)
-    const [sortPref, setSortPref] = useState([])
-    const [savedSortPref, setSavedSortPref] = useState([])
+    const [dragSort, setDragSort] = useState([])
+    const [savedDragSort, setSavedDragSort] = useState([])
     
 
     //Alarm reminder
     const [alarmTime, setAlarmTime] = useState('');
     const [alarmBoxOpen, setAlarmBoxOpen] = useState(false)
     // const [playTune, setPlayTune] = useState(false);
-    const [activeTune, setActiveTune] = useState("");
+    const [activeTune, setActiveTune] = useState('');
     const [alarmTunes, setAlarmTunes] = useState(alarmSounds);
     const [newTune, setNewTune] = useState([])
     const alarmAudioRef = useRef([]);
@@ -104,6 +104,7 @@ export const TodoProvider = ({children}) => {
             setBaseThemeColor(e.target.value);
             setEffectChange(true);
         }
+
         return {changeThemeColor, handleColorChange}
     }
   
@@ -119,7 +120,7 @@ export const TodoProvider = ({children}) => {
             if(elClass(e, 'sort_type')) {
                 type === 'mouse-in' ?
                     e.target.innerText !== activeSortType ? 
-                        elStyle_.color = styleColors.sortsetthov : elStyle_.color = styleColors.sorttypehov :
+                        elStyle_.color = '#444' : elStyle_.color = styleColors.sorttypehov :
                     elStyle_.color = styleColors.opacitycolor;
             }else if (elClass(e, 'dltcomp_btn') || elClass(e, 'empty_btn')) {
                 type === 'mouse-in' ?
@@ -158,7 +159,7 @@ export const TodoProvider = ({children}) => {
          return {inputFocus, inputHover, sortBoxMouseOut, addBtnHover}
     }
 
-    function cssComplimentaryStyles () {
+    function cssComplimentaryStyles (todoToRender) {
     
         //styling for last todo 
         let  consolesRef;
@@ -171,18 +172,24 @@ export const TodoProvider = ({children}) => {
             consolesTodos = consolesRef?.children;
             const todosEl= Array.from(consolesTodos)
             
+            //updating all but the last todo items with hr
             const todoHrLines = todosEl.map((el)=> {
                 return el.children[0].children[1];
             })
 
-            let lastLine;
-            
             if(todoHrLines && todoHrLines.length) {
-                lastLine = todoHrLines[todoHrLines.length - 1];
+                todoHrLines.forEach((line, index) => {
+                    if(index === todoToRender.length - 1) {
+                        line.style.visible = 'hidden';
+                        line.style.opacity = '0';
+                    }
+                    else {
+                        line.style.visibiliy = 'visible';
+                        line.style.opacity = '1';
+                    };
+                });
             } 
-            
-            if(lastLine) lastLine.style.display = 'none';
-            
+
             //styling for last todo btns
             const todoBtns = todosEl.map((el)=> {
                 return el.children[0].children[0].children[1].children[1];
@@ -190,13 +197,13 @@ export const TodoProvider = ({children}) => {
 
             let lastTodoBtns;
 
-            if(todoBtns && todoBtns.length) {
+            if(todoBtns?.length) {
                 lastTodoBtns = todoBtns[todoBtns.length - 1];
             } 
 
             if(lastTodoBtns && window.innerWidth < 650) {
-                lastTodoBtns.style.top = '50%'
-                lastTodoBtns.style.borderBottom = '8px solid white';
+                // lastTodoBtns.style.top = '50%'
+                lastTodoBtns.style.borderBottom = '3px solid white';
             };
         }
         return;
@@ -238,8 +245,6 @@ export const TodoProvider = ({children}) => {
             let toggledTodo = todos.find(todo=> todo.id === id);
             toggledTodo= {...toggledTodo, complete:!toggledTodo.complete};
 
-            console.log(todoTagRef.current)
-    
             const filtTodos = todos.filter(todo => {return todo.id !==id})
             todoTagRef.current[i].style.fontWeight = '400';
 
@@ -333,10 +338,10 @@ export const TodoProvider = ({children}) => {
                 if(foundTodos.length) {
                     setTodoRender(foundTodos);
                     setFooterBtns(false);
-                    setSearchFound('found');
+                    setSearchFound(true)
                 }else{
                     setTodoRender([]);
-                    return setSearchFound('none');
+                    setSearchFound(false)
                 }
             }else { 
                 setTodoRender(todoList);
@@ -346,6 +351,8 @@ export const TodoProvider = ({children}) => {
 
         const handleDragEnd = (event) => {
             const {active, over} = event;
+
+            console.log(active, over)
 
             const getTodoPosition = (id) => {
                 return todoList.findIndex(todo => todo.id === id)
@@ -357,13 +364,17 @@ export const TodoProvider = ({children}) => {
                 const initialPosition = getTodoPosition(active.id);
                 const currentPosition = getTodoPosition(over.id)
 
-                setActiveSortType('Drag sort')
-
-                const sortPreference = arrayMove(todos, initialPosition, currentPosition);
-                setSortPref(sortPreference);
-                return sortPreference
+                const dragSortTodoList = arrayMove(todos, initialPosition, currentPosition);
+                setDragSort(dragSortTodoList);
+                return dragSortTodoList
             })
-
+            
+            setSortTypes(sorts => {
+                return sorts.map(sort => {
+                    if(sort.type === 'Drag sort') return {...sort, active: true};
+                    return {...sort, active: false};
+                })
+            })
         }
 
         return {
@@ -427,7 +438,7 @@ export const TodoProvider = ({children}) => {
                 if (type === 'Time added') return b.id - a.id;
                 if (type === 'Alarm time') return a.alarm.time.localeCompare(b.alarm.time);
             }).sort((a,b) => a.complete - b.complete).sort((a, b) => type === 'Alarm time' && b.alarm.active.toString().localeCompare(a.alarm.active.toString()))] 
-            : sortPref;
+            : todos;
 
             return reorderedTodos
         }
@@ -582,8 +593,6 @@ export const TodoProvider = ({children}) => {
                         return {...tune, active: false};
                     })
                 })
-                alarmAudioRef.current.forEach(ref => ref.children.reload());
-                console.log(alarmAudioRef);
             }
             return;
         }
@@ -665,21 +674,24 @@ export const TodoProvider = ({children}) => {
             setColors(new Values(storedTodo.baseThemeColor).all(colorVar))
             setTodoList(storedTodo.todoList);
             setSortTypes(storedTodo.sortTypes)
-            setSortPref(storedTodo.userSortPreference);
-            setAlarmTunes(storedTodo.tunes)
+            setDragSort(storedTodo.userDragSortTodoList?.length ? storedTodo.userDragSortTodoList : storedTodo.todoList);
+            setAlarmTunes(storedTodo.tunes);
+            setActiveSortType(storedTodo.sortTypes?.find(sort => sort.active)?.type);
         };
     }, [])
-
     
-    useEffect (()=> {
-        setSavedSortPref(sortPref)
-    }, [sortPref])
+    useEffect(()=> {
+        // console.log(dragSort);
+        // console.log(activeSortType);
+        // console.log(sortTypes);
+        setSavedDragSort(dragSort)
+    }, [dragSort]);
 
     //SortType changes effect and active sort type change
     useEffect (()=> {
         setActiveSortType(sortTypes?.find(sort => sort.active)?.type);
-        sortTypeEffect(sortTypes?.find(sort => sort.active)?.type, todoList); 
-    }, [sortTypes])
+        sortTypeEffect(sortTypes?.find(sort => sort.active)?.type, todoList);
+    }, [sortTypes, todoList]);
 
     //Setting Alarm active tune
     useEffect (()=> {
@@ -691,12 +703,12 @@ export const TodoProvider = ({children}) => {
         const todosInfo = {
             todoList: todoList, 
             sortTypes: sortTypes,
-            userSortPreference: savedSortPref, 
+            userDragSortTodoList: dragSort, 
             baseThemeColor: baseThemeColor, 
             tunes: alarmTunes,
         }
         isMounted.current ? localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todosInfo)): isMounted.current = true;
-    }, [todoList, sortTypes, sortPref, baseThemeColor, alarmTunes])
+    }, [todoList, sortTypes, dragSort, baseThemeColor, alarmTunes])
 
     //Synching TodoRender with TodoList on change
     useEffect (()=> {
@@ -707,13 +719,12 @@ export const TodoProvider = ({children}) => {
     useEffect (()=> {
         const effectTimeout = setTimeout(() => {
             todoOrderStyles(todoRender);
-            cssComplimentaryStyles();
+            cssComplimentaryStyles(todoRender);
         }, 1000);
 
         return ()=> clearInterval(effectTimeout);
     }, [todoRender])
 
-    //Alert 
     useEffect(()=> {
         const alertTimer = setTimeout(()=> {
             alertControl();
@@ -722,7 +733,7 @@ export const TodoProvider = ({children}) => {
         return ()=> clearInterval(alertTimer);
     },[todoList, addTodo])
 
-    return <TodoContext.Provider value={{colors, date, time, alarmTime, setColors, baseThemeColor, setBaseThemeColor, styleColors, colorVar, todoList, sortTypes, activeSortType, sortBox, setSortBox, effectChange, setEffectChange,openSettings, setOpenSettings, settingsBtn, todoRender, inputRef, todosConsoleRef, alert, editing, footerBtns, searchFound, todoToolsControls, sortTodoControls, todoAlarmControls, themeHandler, inputThemeStyles, todoTagRef, sortUlRef, alarmConsolesRef, alarmTunes, setAlarmTunes, newTune, alarmTunesControl, alarmAudioRef, setActiveTune, activeTune}}>
+    return <TodoContext.Provider value={{colors, date, time, alarmTime, setColors, baseThemeColor, setBaseThemeColor, styleColors, colorVar, todoList, sortTypes, activeSortType, sortBox, setSortBox, effectChange, setEffectChange,openSettings, setOpenSettings, settingsBtn, todoRender, inputRef, todosConsoleRef, alert, editing, footerBtns, searchFound,todoToolsControls, sortTodoControls, todoAlarmControls, themeHandler, inputThemeStyles, todoTagRef, sortUlRef, alarmConsolesRef, alarmTunes, setAlarmTunes, newTune, alarmTunesControl, alarmAudioRef, setActiveTune, activeTune}}>
         {children}
     </TodoContext.Provider>
 }

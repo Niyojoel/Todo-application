@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useTransition } from 'react'
 import {useTodoContext} from './todoContext'
 import { FaBookmark, FaDotCircle, FaTimes } from 'react-icons/fa';
 
@@ -63,7 +63,10 @@ const Settings = () => {
                             }
                             // typeof(tune) === "object" ? name = tune.name : typeof(tune) === "string" ? name = tune.includes('./') ? tune.split('/')[1] : tune : name = "";
                             return (
-                                <div key={id} className="tune" onClick={() => changeActiveTune(id)}>
+                                <div key={id} className="tune" onClick={() => {
+                                        changeActiveTune(id)
+                                        
+                                    }}>
                                     <span className="tune_tag">
                                         <FaDotCircle size={12}/>
                                         <p>{name}</p>

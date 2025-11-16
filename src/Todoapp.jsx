@@ -9,7 +9,7 @@ import {SortableContext, sortableKeyboardCoordinates, verticalListSortingStrateg
 import { KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 
 function Todoapp() {
-    const {styleColors, todoList, sortTypes, activeSortType, sortBox, todoRender, inputRef, todosConsoleRef, alert, date, time, editing, footerBtns, searchFound, sortUlRef, settingsBtn, openSettings, setOpenSettings, setSortBox, todoToolsControls, todoAlarmControls, sortTodoControls, inputThemeStyles} = useTodoContext();
+    const {styleColors, todoList, sortTypes, activeSortType, sortBox, todoRender, inputRef, todosConsoleRef, alert, date, time, editing, footerBtns, sortUlRef, SearchNotFoundRef, searchNotFoundMessage, setSearchNotFoundMessage, searchFound, settingsBtn, openSettings, setOpenSettings, setSortBox, todoToolsControls, todoAlarmControls, sortTodoControls, inputThemeStyles} = useTodoContext();
 
     const {addTodo, emptyAll, activeTodos, deleteComp, initSearch, handleDragEnd} = todoToolsControls()
 
@@ -36,6 +36,7 @@ function Todoapp() {
             coordinateGetter: sortableKeyboardCoordinates,
         })
     )
+
     return (
         <main
             className ='container'
@@ -128,7 +129,7 @@ function Todoapp() {
                     </button>
                     
                     <ul className= {`sort_box ${sortBox && 'sorting_active'}`}
-                    style={{borderTop: `1px solid ${styleColors.opacitycolor}`, border: `1px solid ${styleColors.opacitycolor}`}} onMouseOver={()=>sortBoxState('persist')} ref={sortUlRef}>
+                    onMouseOver={()=>sortBoxState('persist')} ref={sortUlRef}>
                     {sortTypes.map(({type, active}, index)=> {
                         return <li
                             key = {index}
@@ -168,8 +169,8 @@ function Todoapp() {
                             </SortableContext>  
                         </div>
                     </DndContext>
-                    <div className="search_not-found">
-                        {searchFound === 'none' && <p> Keyword does not match...</p>}   
+                    <div className="search_not-found" ref={SearchNotFoundRef}>
+                        {searchFound === false && <p> No matching result for your search... </p>}
                     </div>
                 </section>
                 {/* footer */}
