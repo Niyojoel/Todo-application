@@ -10,7 +10,7 @@ export const TodoProvider = ({children}) => {
         {
             id: 1,
             file: "./father's_advice.mp3",
-            active: false,
+            active: true,
         },
         {
             id: 2,
